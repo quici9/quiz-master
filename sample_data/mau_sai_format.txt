@@ -1,0 +1,32 @@
+HƯỚNG DẪN TẠO FILE DOCX LỖI ĐỂ TEST
+
+Để kiểm tra tính năng báo lỗi khi upload, bạn hãy tạo một file Word (.docx) với các lỗi sau:
+
+1. Lỗi thiếu đáp án đúng:
+   Câu 1. Thủ đô của Việt Nam là gì?
+   A. Hà Nội
+   B. Hồ Chí Minh
+   C. Đà Nẵng
+   D. Hải Phòng
+   (Không có dòng "Đáp án: ...")
+
+2. Lỗi thiếu lựa chọn (ít hơn 2 đáp án):
+   Câu 2. Một cộng một bằng mấy?
+   A. 2
+   Đáp án: A
+
+3. Lỗi đáp án không khớp với lựa chọn:
+   Câu 3. Mặt trời mọc ở hướng nào?
+   A. Đông
+   B. Tây
+   C. Nam
+   D. Bắc
+   Đáp án: E (Không có lựa chọn E)
+
+4. Lỗi thiếu nội dung câu hỏi:
+   Câu 4. 
+   A. Đúng
+   B. Sai
+   Đáp án: A
+
+Lưu file này dưới dạng .docx và thử upload lên hệ thống. Bạn sẽ thấy danh sách lỗi chi tiết cho từng câu hỏi này.

@@ -1,0 +1,28 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install OpenSSL and other dependencies for Prisma
+RUN apt-get update -y && \
+    apt-get install -y openssl ca-certificates procps && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install dependencies (including dev dependencies for development)
+RUN npm install
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 4000
+
+# Run migrations and start in development mode with watch
+CMD ["sh", "-c", "npx prisma db push && npx prisma db seed && npm run start:dev"]
+

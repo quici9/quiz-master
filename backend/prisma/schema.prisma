@@ -1,0 +1,276 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum QuestionDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Hashed with bcrypt
+  fullName  String?
+  role      UserRole @default(USER)
+  
+  // Profile
+  avatarUrl    String?
+  xp           Int      @default(0)
+  level        Int      @default(1)
+  streak       Int      @default(0)
+  lastActiveAt DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  attempts    QuizAttempt[]
+  bookmarks   QuestionBookmark[]
+  leaderboard Leaderboard[]
+  
+  @@map("users")
+  @@index([email])
+}
+
+// ============================================
+// CATEGORIES
+// ============================================
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  quizzes Quiz[]
+  
+  @@map("categories")
+  @@index([slug])
+}
+
+// ============================================
+// QUIZ STRUCTURE
+// ============================================
+
+model Quiz {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  
+  // Configuration
+  categoryId  String?
+  timeLimit   Int?     // Seconds (null = no limit)
+  difficulty  QuestionDifficulty @default(MEDIUM)
+  isPublished Boolean  @default(true)
+  
+  // Metadata
+  totalQuestions Int
+  createdBy      String?  // Email or name of admin
+  fileName       String?  // Original .docx filename
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  category    Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  questions   Question[]
+  attempts    QuizAttempt[]
+  
+  @@map("quizzes")
+  @@index([categoryId])
+  @@index([isPublished])
+  @@index([createdAt])
+}
+
+model Question {
+  id       String @id @default(uuid())
+  quizId   String
+  
+  // Content
+  text       String   @db.Text
+  order      Int      // Order in the quiz (1, 2, 3, ...)
+  difficulty QuestionDifficulty @default(MEDIUM)
+  
+  // Metadata
+  explanation String?  @db.Text  // Explanation for correct answer
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  quiz      Quiz              @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options   QuestionOption[]
+  answers   AttemptAnswer[]
+  bookmarks QuestionBookmark[]
+  
+  @@map("questions")
+  @@index([quizId])
+  @@index([quizId, order])
+}
+
+model QuestionOption {
+  id         String  @id @default(uuid())
+  questionId String
+  
+  // Content
+  label       String  // A, B, C, D
+  text        String  @db.Text
+  isCorrect   Boolean @default(false)
+  explanation String? @db.Text  // Why this option is correct/incorrect
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  question   Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answers    AttemptAnswer[]
+  
+  @@map("question_options")
+  @@index([questionId])
+  @@unique([questionId, label])
+}
+
+// ============================================
+// QUIZ ATTEMPTS & RESULTS
+// ============================================
+
+model QuizAttempt {
+  id      String        @id @default(uuid())
+  userId  String
+  quizId  String
+  
+  // Status
+  status         AttemptStatus @default(IN_PROGRESS)
+  
+  // Results
+  score          Int?          // 0-100
+  totalQuestions Int
+  correctAnswers Int?
+  
+  // Timing
+  startedAt    DateTime      @default(now())
+  completedAt  DateTime?
+  pausedAt     DateTime?
+  resumedAt    DateTime?
+  timeSpent    Int?          // Seconds
+  
+  // Anti-cheating
+  tabSwitchCount     Int     @default(0)
+  suspiciousActivity Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz    Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers AttemptAnswer[]
+  
+  @@map("quiz_attempts")
+  @@index([userId])
+  @@index([quizId])
+  @@index([status])
+  @@index([userId, status])
+  @@index([completedAt])
+}
+
+model AttemptAnswer {
+  id               String  @id @default(uuid())
+  attemptId        String
+  questionId       String
+  selectedOptionId String?  // Null if not answered
+  
+  // Result
+  isCorrect Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  attempt        QuizAttempt    @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question       Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedOption QuestionOption? @relation(fields: [selectedOptionId], references: [id], onDelete: SetNull)
+  
+  @@map("attempt_answers")
+  @@index([attemptId])
+  @@index([questionId])
+  @@unique([attemptId, questionId]) // One answer per question per attempt
+}
+
+// ============================================
+// BOOKMARKS
+// ============================================
+
+model QuestionBookmark {
+  id         String   @id @default(uuid())
+  userId     String
+  questionId String
+  note       String?  @db.Text
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  @@map("question_bookmarks")
+  @@unique([userId, questionId])
+  @@index([userId])
+  @@index([questionId])
+}
+
+// ============================================
+// LEADERBOARD
+// ============================================
+
+model Leaderboard {
+  id       String   @id @default(uuid())
+  userId   String
+  score    Int      // Average score for the period
+  period   String   // "2024-W01" (weekly) or "2024-01" (monthly)
+  rank     Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("leaderboards")
+  @@unique([userId, period])
+  @@index([period, rank])
+  @@index([period, score])
+}
