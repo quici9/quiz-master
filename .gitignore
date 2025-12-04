@@ -10,12 +10,18 @@ build/
 # Environment variables
 .env
 .env.*
+*.env
 !.env.example
 !env.example
 
 # Database
 postgres-data/
 *.sql
+docker-data/
+volumes/
+data/
+mysql-data/
+redis-data/
 
 # Uploads
 backend/uploads/
@@ -35,9 +41,11 @@ Thumbs.db
 .vscode/
 .idea/
 *.sublime-*
+*.iml
 
 # Logs
 *.log
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -54,3 +62,12 @@ coverage/
 # Temporary
 tmp/
 temp/
+
+# Security & Secrets
+*.key
+*.pem
+*.crt
+keycloak/keys/
+secrets/
+config/local/
+/private/
