@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   db:
@@ -18,7 +16,7 @@ services:
     networks:
       - quiz-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quizuser} -d ${POSTGRES_DB:-quizdb}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quizuser} -d ${POSTGRES_DB:-quizdb}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,31 +27,29 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # NestJS Backend
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: ${BUILD_TARGET:-production}
     container_name: quiz-backend
     restart: unless-stopped
     environment:
       # Database
       DATABASE_URL: postgresql://${POSTGRES_USER:-quizuser}:${POSTGRES_PASSWORD:-quizpass}@db:5432/${POSTGRES_DB:-quizdb}
-      
+
       # JWT Secrets
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production-please}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-refresh-secret-too}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-1h}
       JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
-      
+
       # Server
       PORT: ${BACKEND_PORT:-4000}
       NODE_ENV: ${NODE_ENV:-production}
-      
+
       # CORS
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
-      
+
       # Upload
       MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
     ports:
@@ -66,7 +62,7 @@ services:
     volumes:
       - ./backend/uploads:/app/uploads
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:4000/api', (r) => { process.exit(r.statusCode === 404 ? 0 : 1); })"]
+      test: [ "CMD", "node", "-e", "require('http').get('http://localhost:4000/api', (r) => { process.exit(r.statusCode === 404 ? 0 : 1); })" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -94,7 +90,7 @@ services:
     networks:
       - quiz-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/" ]
       interval: 30s
       timeout: 10s
       retries: 3
