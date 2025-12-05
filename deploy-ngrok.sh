@@ -124,22 +124,22 @@ fi
 
 # Stop existing containers
 print_info "Dừng containers cũ (nếu có)..."
-docker-compose down
+docker compose down
 
 # Build and start containers
 print_info "Build và khởi động containers mới..."
-docker-compose up --build -d
+docker compose up --build -d
 
 # Wait for containers to be healthy
 print_info "Đợi containers khởi động..."
 sleep 10
 
 # Check container status
-if docker-compose ps | grep -q "Up"; then
+if docker compose ps | grep -q "Up"; then
     print_success "Containers đã khởi động thành công"
 else
     print_error "Có lỗi khi khởi động containers"
-    docker-compose ps
+    docker compose ps
     exit 1
 fi
 
