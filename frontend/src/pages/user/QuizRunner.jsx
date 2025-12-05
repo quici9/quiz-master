@@ -41,14 +41,10 @@ export default function QuizRunner() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [currentFeedback, setCurrentFeedback] = useState(null);
   const [firstAnswerGiven, setFirstAnswerGiven] = useState({});
+  const [feedbackHistory, setFeedbackHistory] = useState({}); // Store feedback for each question
   const feedbackRef = useRef(null);
 
-  // Auto-scroll to feedback in Review Mode (Desktop only)
-  useEffect(() => {
-    if (reviewMode && showFeedback && feedbackRef.current && window.innerWidth >= 768) {
-      feedbackRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [reviewMode, showFeedback]);
+  // Removed auto-scroll to avoid interrupting user experience
 
   const { time, start: startTimer, stop: stopTimer, setTime } = useTimer(0, quiz?.timeLimit, () => handleAutoSubmit());
 
@@ -141,8 +137,17 @@ export default function QuizRunner() {
           return;
         }
 
-        // Load questions for this specific attempt
-        const questionsRes = await questionService.getQuestionsByAttempt(resumeAttemptId);
+        // Get config from configSnapshot
+        const shuffleOptions = attemptRes.data.configSnapshot?.shuffleOptions || false;
+        const reviewModeFromConfig = attemptRes.data.configSnapshot?.reviewMode || false;
+
+        // Restore review mode
+        if (reviewModeFromConfig) {
+          setReviewMode(true);
+        }
+
+        // Load questions for this specific attempt with shuffle config
+        const questionsRes = await questionService.getQuestionsByAttempt(resumeAttemptId, { shuffleOptions });
 
         setAttemptId(resumeAttemptId);
         setQuiz(attemptRes.data.quiz);
@@ -171,9 +176,19 @@ export default function QuizRunner() {
 
         if (isResumed) {
           // Automatically resume existing attempt
-          toast.info('Resuming your previous attempt...');
+          toast('Resuming your previous attempt...', { icon: '🔄' });
           const attemptDetailRes = await attemptService.getAttemptById(newAttemptId);
-          const questionsRes = await questionService.getQuestionsByAttempt(newAttemptId);
+
+          // Get config from configSnapshot
+          const shuffleOptions = attemptDetailRes.data.configSnapshot?.shuffleOptions || false;
+          const reviewModeFromConfig = attemptDetailRes.data.configSnapshot?.reviewMode || false;
+
+          // Restore review mode
+          if (reviewModeFromConfig) {
+            setReviewMode(true);
+          }
+
+          const questionsRes = await questionService.getQuestionsByAttempt(newAttemptId, { shuffleOptions });
 
           setAttemptId(newAttemptId);
           setQuiz(attemptDetailRes.data.quiz || questionsRes.data.quiz);
@@ -186,9 +201,11 @@ export default function QuizRunner() {
           setTime(elapsed);
           startTimer();
         } else {
-          // Brand new attempt
+          // Brand new attempt - use config from response
+          const shuffleOptions = attemptRes.data.config?.shuffleOptions || false;
+
           const [questionsRes, quizRes] = await Promise.all([
-            questionService.getQuestionsByAttempt(newAttemptId),
+            questionService.getQuestionsByAttempt(newAttemptId, { shuffleOptions }),
             quizService.getQuizById(id)
           ]);
 
@@ -239,12 +256,16 @@ export default function QuizRunner() {
       // Show instant feedback in Review Mode
       if (reviewMode) {
         // Use backend response which includes isCorrect and correctOption
-        setCurrentFeedback({
+        const feedback = {
           isCorrect: response.data.isCorrect,
           explanation: response.data.correctOption?.explanation || question.explanation,
           correctOption: response.data.correctOption,
-        });
+        };
+        setCurrentFeedback(feedback);
         setShowFeedback(true);
+
+        // Save feedback to history for this question
+        setFeedbackHistory(prev => ({ ...prev, [questionId]: feedback }));
       }
     } catch (error) {
       console.error('Failed to save answer', error);
@@ -274,17 +295,72 @@ export default function QuizRunner() {
 
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-      // Reset feedback when moving to next question
-      setShowFeedback(false);
-      setCurrentFeedback(null);
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+
+      // In Review Mode, restore feedback if question was already answered
+      if (reviewMode && questions[nextIndex]) {
+        const nextQuestionId = questions[nextIndex].id;
+        const previousFeedback = feedbackHistory[nextQuestionId];
+
+        if (previousFeedback) {
+          setCurrentFeedback(previousFeedback);
+          setShowFeedback(true);
+        } else {
+          setShowFeedback(false);
+          setCurrentFeedback(null);
+        }
+      } else {
+        setShowFeedback(false);
+        setCurrentFeedback(null);
+      }
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-      // Reset feedback when moving to previous question
+      const prevIndex = currentIndex - 1;
+      setCurrentIndex(prevIndex);
+
+      // In Review Mode, restore feedback if question was already answered
+      if (reviewMode && questions[prevIndex]) {
+        const prevQuestionId = questions[prevIndex].id;
+        const previousFeedback = feedbackHistory[prevQuestionId];
+
+        if (previousFeedback) {
+          setCurrentFeedback(previousFeedback);
+          setShowFeedback(true);
+        } else {
+          setShowFeedback(false);
+          setCurrentFeedback(null);
+        }
+      } else {
+        setShowFeedback(false);
+        setCurrentFeedback(null);
+      }
+    } else {
+      setShowFeedback(false);
+      setCurrentFeedback(null);
+    }
+  };
+
+
+  const handleJumpToQuestion = (index) => {
+    setCurrentIndex(index);
+
+    // In Review Mode, restore feedback if question was already answered
+    if (reviewMode && questions[index]) {
+      const targetQuestionId = questions[index].id;
+      const previousFeedback = feedbackHistory[targetQuestionId];
+
+      if (previousFeedback) {
+        setCurrentFeedback(previousFeedback);
+        setShowFeedback(true);
+      } else {
+        setShowFeedback(false);
+        setCurrentFeedback(null);
+      }
+    } else {
       setShowFeedback(false);
       setCurrentFeedback(null);
     }
@@ -428,14 +504,34 @@ export default function QuizRunner() {
                 </div>
               )}
 
-              <Button
-                onClick={handleNext}
-                disabled={currentIndex === questions.length - 1}
-                className="w-full justify-center"
-              >
-                {currentIndex === questions.length - 1 ? 'Last Question' : 'Next Question'}
-                <ArrowRightIcon className="w-4 h-4 ml-2" />
-              </Button>
+              {/* Check if all questions are answered */}
+              {(() => {
+                const allAnswered = Object.keys(answers).length === questions.length;
+                const isLastQuestion = currentIndex === questions.length - 1;
+
+                if (isLastQuestion && allAnswered) {
+                  return (
+                    <Button
+                      onClick={handleSubmitClick}
+                      variant="primary"
+                      className="w-full justify-center"
+                    >
+                      Submit Quiz
+                    </Button>
+                  );
+                } else {
+                  return (
+                    <Button
+                      onClick={handleNext}
+                      disabled={isLastQuestion}
+                      className="w-full justify-center"
+                    >
+                      {isLastQuestion ? 'Last Question' : 'Next Question'}
+                      <ArrowRightIcon className="w-4 h-4 ml-2" />
+                    </Button>
+                  );
+                }
+              })()}
             </div>
           )}
 
@@ -451,14 +547,33 @@ export default function QuizRunner() {
                 Previous
               </Button>
 
-              <Button
-                variant="primary"
-                onClick={handleNext}
-                disabled={currentIndex === questions.length - 1}
-              >
-                Next
-                <ArrowRightIcon className="w-4 h-4 ml-2" />
-              </Button>
+              {/* Check if all questions are answered */}
+              {(() => {
+                const allAnswered = Object.keys(answers).length === questions.length;
+                const isLastQuestion = currentIndex === questions.length - 1;
+
+                if (isLastQuestion && allAnswered) {
+                  return (
+                    <Button
+                      variant="primary"
+                      onClick={handleSubmitClick}
+                    >
+                      Submit Quiz
+                    </Button>
+                  );
+                } else {
+                  return (
+                    <Button
+                      variant="primary"
+                      onClick={handleNext}
+                      disabled={isLastQuestion}
+                    >
+                      Next
+                      <ArrowRightIcon className="w-4 h-4 ml-2" />
+                    </Button>
+                  );
+                }
+              })()}
             </div>
           )}
         </div>
@@ -470,7 +585,7 @@ export default function QuizRunner() {
             currentIndex={currentIndex}
             answers={answers}
             bookmarks={bookmarks}
-            onJumpTo={setCurrentIndex}
+            onJumpTo={handleJumpToQuestion}
             className="sticky top-24"
           />
         </div>
