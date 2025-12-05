@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import analytics from '../services/analytics.service';
-import { useDarkMode } from '../context/ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -79,8 +79,8 @@ export default function Analytics() {
         ],
     };
 
-    const { darkMode } = useDarkMode();
-    const isDark = darkMode === 'dark' || (darkMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const options = {
         responsive: true,
