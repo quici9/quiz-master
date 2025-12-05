@@ -14,9 +14,9 @@ export default function QuestionDisplay({
   if (!question) return null;
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
+    <div className="glass rounded-2xl p-4 md:p-8">
       <div className="flex justify-between items-start mb-6">
-        <h3 className="text-xl font-medium text-gray-900 dark:text-white leading-relaxed">
+        <h3 className="text-lg md:text-xl font-medium text-gray-900 dark:text-white leading-relaxed">
           <span className="font-bold text-primary-600 dark:text-primary-400 mr-2">Q{question.order || '?'}:</span>
           {question.text}
         </h3>
@@ -39,7 +39,7 @@ export default function QuestionDisplay({
           const isCorrectOption = reviewModeFeedback?.correctOptionId === option.id;
           const isWrongSelection = isSelected && reviewModeFeedback && !reviewModeFeedback.isCorrect;
 
-          let buttonClass = `w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 group `;
+          let buttonClass = `w-full text-left p-3 md:p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 group `;
 
           if (disabled) {
             buttonClass += 'opacity-70 cursor-not-allowed ';

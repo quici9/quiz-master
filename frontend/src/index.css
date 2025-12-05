@@ -69,7 +69,7 @@
 
   /* Card styles */
   .card {
-    @apply glass rounded-2xl p-6;
+    @apply glass rounded-2xl p-4 md:p-6;
   }
 
   .card-hover {

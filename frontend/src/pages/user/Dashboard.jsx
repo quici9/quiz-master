@@ -64,9 +64,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
           Welcome back, {user?.fullName || 'User'}! 👋
         </h1>
         <Link to="/quizzes">
@@ -75,8 +75,8 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="flex items-center p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <Card className="flex items-center p-4 md:p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
           <div className="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-200 mr-4">
             <BookOpenIcon className="w-8 h-8" />
           </div>
@@ -86,7 +86,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card className="flex items-center p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+        <Card className="flex items-center p-4 md:p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
           <div className="p-3 rounded-full bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-200 mr-4">
             <ChartBarIcon className="w-8 h-8" />
           </div>
@@ -96,7 +96,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card className="flex items-center p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+        <Card className="flex items-center p-4 md:p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
           <div className="p-3 rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-200 mr-4">
             <TrophyIcon className="w-8 h-8" />
           </div>
@@ -107,7 +107,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Recent Quizzes */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
