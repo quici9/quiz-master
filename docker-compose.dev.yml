@@ -18,7 +18,7 @@ services:
     networks:
       - quiz-network-dev
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quizuser} -d ${POSTGRES_DB:-quizdb}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quizuser} -d ${POSTGRES_DB:-quizdb}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,22 +34,26 @@ services:
     environment:
       # Database
       DATABASE_URL: postgresql://${POSTGRES_USER:-quizuser}:${POSTGRES_PASSWORD:-quizpass}@db:5432/${POSTGRES_DB:-quizdb}
-      
+
       # JWT Secrets
       JWT_SECRET: ${JWT_SECRET:-dev-secret-key}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
       JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-30d}
-      
+
       # Server
       PORT: ${BACKEND_PORT:-4000}
       NODE_ENV: development
-      
+
       # CORS - Allow frontend
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
-      
+
       # Upload
       MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+
+      # Redis
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
     ports:
       - "${BACKEND_PORT:-4000}:${BACKEND_PORT:-4000}"
     depends_on:
@@ -64,6 +68,31 @@ services:
       - ./backend/uploads:/app/uploads
       # Prevent overwriting node_modules
       - backend-node-modules:/app/node_modules
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: quiz-redis-dev
+    restart: unless-stopped
+    environment:
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data-dev:/data
+    networks:
+      - quiz-network-dev
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # React Frontend (Development Mode with Vite Hot Reload)
   frontend:
@@ -103,4 +132,5 @@ volumes:
     name: quiz-backend-node-modules
   frontend-node-modules:
     name: quiz-frontend-node-modules
-
+  redis-data-dev:
+    name: quiz-redis-data-dev

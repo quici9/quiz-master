@@ -1,15 +1,15 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
   Patch,
-  Param, 
-  Delete, 
-  UseGuards, 
-  UseInterceptors, 
-  UploadedFile, 
-  Query 
+  Param,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  Query
 } from '@nestjs/common';
 import { QuizzesService } from './quizzes.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -23,7 +23,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 
 @Controller('quizzes')
 export class QuizzesController {
-  constructor(private readonly quizzesService: QuizzesService) {}
+  constructor(private readonly quizzesService: QuizzesService) { }
 
   @Post('import')
   @UseGuards(RolesGuard)
@@ -41,6 +41,12 @@ export class QuizzesController {
   @Public()
   async findAll(@Query() filterDto: QuizFilterDto) {
     return this.quizzesService.findAll(filterDto);
+  }
+
+  @Get(':id/stats')
+  @Public()
+  async getQuizStats(@Param('id') id: string) {
+    return this.quizzesService.getQuizStats(id);
   }
 
   @Get(':id')

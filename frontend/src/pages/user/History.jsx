@@ -38,21 +38,21 @@ export default function History() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+      <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
         My Quiz History
       </h1>
 
       {attempts.length > 0 ? (
         <div className="space-y-4">
           {attempts.map(attempt => (
-            <Card key={attempt.id} className="hover:bg-white/5 transition-all duration-300 border-white/10">
+            <Card key={attempt.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-300 border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                  <h3 className="font-bold text-lg text-white">{attempt.quiz?.title || 'Unknown Quiz'}</h3>
-                  <div className="flex items-center gap-4 mt-1 text-sm text-gray-400">
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">{attempt.quiz?.title || 'Unknown Quiz'}</h3>
+                  <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
                     <span>{formatDate(attempt.createdAt)}</span>
                     <span>•</span>
-                    <span className={`font-medium ${attempt.status === 'COMPLETED' ? 'text-success-400' : 'text-yellow-400'
+                    <span className={`font-medium ${attempt.status === 'COMPLETED' ? 'text-success-600 dark:text-success-400' : 'text-yellow-600 dark:text-yellow-400'
                       }`}>
                       {attempt.status === 'COMPLETED' ? 'Completed' : 'In Progress'}
                     </span>
@@ -62,8 +62,8 @@ export default function History() {
                 <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                   {attempt.status === 'COMPLETED' && (
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Score</p>
-                      <p className={`text-xl font-bold ${attempt.score >= 70 ? 'text-success-400' : 'text-yellow-400'
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Score</p>
+                      <p className={`text-xl font-bold ${attempt.score >= 70 ? 'text-success-600 dark:text-success-400' : 'text-yellow-600 dark:text-yellow-400'
                         }`}>
                         {attempt.score}%
                       </p>
@@ -87,8 +87,8 @@ export default function History() {
           ))}
         </div>
       ) : (
-        <Card className="text-center py-12 border-white/10">
-          <p className="text-gray-400 mb-6">You haven't taken any quizzes yet.</p>
+        <Card className="text-center py-12 border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
+          <p className="text-gray-500 dark:text-gray-400 mb-6">You haven't taken any quizzes yet.</p>
           <Link to="/quizzes">
             <Button variant="primary">Browse Quizzes</Button>
           </Link>

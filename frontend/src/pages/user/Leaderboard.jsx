@@ -38,20 +38,20 @@ export default function Leaderboard() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <h1 className="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-500">
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 dark:from-yellow-200 dark:to-yellow-500">
           Leaderboard 🏆
         </h1>
-        <div className="flex bg-white/5 p-1 rounded-xl backdrop-blur-sm border border-white/10">
+        <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl backdrop-blur-sm border border-gray-200 dark:border-white/10">
           <button
             onClick={() => setPeriod('weekly')}
-            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${period === 'weekly' ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
+            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${period === 'weekly' ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
               }`}
           >
             Weekly
           </button>
           <button
             onClick={() => setPeriod('monthly')}
-            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${period === 'monthly' ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
+            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${period === 'monthly' ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
               }`}
           >
             Monthly
@@ -59,26 +59,26 @@ export default function Leaderboard() {
         </div>
       </div>
 
-      <Card className="overflow-hidden p-0 border-white/10">
+      <Card className="overflow-hidden p-0 border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/10">
-            <thead className="bg-white/5">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-white/10">
+            <thead className="bg-gray-50 dark:bg-white/5">
               <tr>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Rank
                 </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   User
                 </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Quizzes Taken
                 </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Total Score
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-gray-200 dark:divide-white/5">
               {loading ? (
                 <tr>
                   <td colSpan="4" className="px-6 py-12 text-center">
@@ -87,12 +87,12 @@ export default function Leaderboard() {
                 </tr>
               ) : leaders.length > 0 ? (
                 leaders.map((entry, index) => (
-                  <tr key={index} className={`transition-colors hover:bg-white/5 ${index < 3 ? 'bg-gradient-to-r from-yellow-500/5 to-transparent' : ''}`}>
+                  <tr key={index} className={`transition-colors hover:bg-gray-50 dark:hover:bg-white/5 ${index < 3 ? 'bg-gradient-to-r from-yellow-50 to-transparent dark:from-yellow-500/5 dark:to-transparent' : ''}`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold ${index === 0 ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/50' :
-                          index === 1 ? 'bg-gray-400 text-white shadow-lg shadow-gray-400/50' :
-                            index === 2 ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/50' :
-                              'text-gray-500 bg-white/5'
+                        index === 1 ? 'bg-gray-400 text-white shadow-lg shadow-gray-400/50' :
+                          index === 2 ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/50' :
+                            'text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-white/5'
                         }`}>
                         {index + 1}
                       </div>
@@ -102,15 +102,15 @@ export default function Leaderboard() {
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold mr-3 shadow-lg border border-white/10">
                           {(entry.user?.fullName || entry.user?.email || '?')[0].toUpperCase()}
                         </div>
-                        <div className="text-sm font-medium text-white">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {entry.user?.fullName || 'Unknown'}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                       {entry.quizzesTaken}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-success-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-success-600 dark:text-success-400">
                       {entry.score}
                     </td>
                   </tr>

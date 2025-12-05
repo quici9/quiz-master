@@ -2,15 +2,18 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException 
 import { PrismaService } from '../prisma/prisma.service';
 import { AttemptStatus, Prisma } from '@prisma/client';
 import { LeaderboardService } from '../leaderboard/leaderboard.service';
+import { StartAttemptDto } from './dto/start-attempt.dto';
 
 @Injectable()
 export class AttemptsService {
   constructor(
     private prisma: PrismaService,
     private leaderboardService: LeaderboardService,
-  ) {}
+  ) { }
 
-  async startAttempt(userId: string, quizId: string) {
+  async startAttempt(userId: string, dto: StartAttemptDto) {
+    const { quizId, config } = dto;
+
     // Check if quiz exists
     const quiz = await this.prisma.quiz.findUnique({
       where: { id: quizId },
@@ -42,13 +45,41 @@ export class AttemptsService {
       };
     }
 
+    // Apply config defaults if not provided
+    const finalConfig = {
+      questionCount: config?.questionCount ?? null,
+      shuffleQuestions: config?.shuffleQuestions ?? true,
+      shuffleOptions: config?.shuffleOptions ?? false,
+    };
+
+    // Determine questions based on config
+    // Note: We don't actually fetch questions here for storage, just count
+    // But for Phase 2 we need to store selected questions if subset
+    let selectedQuestionsCount = quiz.questions.length;
+    let selectedQuestionIds: string[] = [];
+
+    if (finalConfig.questionCount && finalConfig.questionCount < quiz.questions.length) {
+      selectedQuestionsCount = finalConfig.questionCount;
+      // We need to select random IDs here to persist which questions were chosen
+      // This requires fetching IDs from QuestionsService (or here)
+      // For now, let's assume QuestionsService handles the selection logic
+      // But we need to store it in the attempt.
+      // Let's use a helper to get IDs
+      const allQuestionIds = quiz.questions.map(q => q.id);
+      selectedQuestionIds = this.selectRandom(allQuestionIds, selectedQuestionsCount);
+    } else {
+      selectedQuestionIds = quiz.questions.map(q => q.id);
+    }
+
     // Create new attempt
     const attempt = await this.prisma.quizAttempt.create({
       data: {
         userId,
         quizId,
-        totalQuestions: quiz.questions.length,
+        totalQuestions: selectedQuestionsCount,
         status: AttemptStatus.IN_PROGRESS,
+        configSnapshot: finalConfig as any, // Store config
+        selectedQuestions: selectedQuestionIds,
       },
     });
 
@@ -59,7 +90,17 @@ export class AttemptsService {
       startedAt: attempt.startedAt,
       totalQuestions: attempt.totalQuestions,
       isResumed: false,
+      config: finalConfig,
     };
+  }
+
+  private selectRandom<T>(array: T[], count: number): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, count);
   }
 
   async answerQuestion(attemptId: string, userId: string, questionId: string, selectedOptionId: string) {
@@ -81,6 +122,9 @@ export class AttemptsService {
     // Verify question belongs to quiz
     const question = await this.prisma.question.findUnique({
       where: { id: questionId },
+      include: {
+        options: true, // Include all options to find correct one
+      },
     });
 
     if (!question || question.quizId !== attempt.quizId) {
@@ -88,13 +132,14 @@ export class AttemptsService {
     }
 
     // Verify selected option belongs to question
-    const option = await this.prisma.questionOption.findUnique({
-      where: { id: selectedOptionId },
-    });
+    const selectedOption = question.options.find(o => o.id === selectedOptionId);
 
-    if (!option || option.questionId !== questionId) {
+    if (!selectedOption) {
       throw new BadRequestException('Invalid option for this question');
     }
+
+    // Find correct option
+    const correctOption = question.options.find(o => o.isCorrect);
 
     // Upsert answer (allow changing answer)
     await this.prisma.attemptAnswer.upsert({
@@ -106,17 +151,27 @@ export class AttemptsService {
       },
       update: {
         selectedOptionId,
-        isCorrect: option.isCorrect,
+        isCorrect: selectedOption.isCorrect,
       },
       create: {
         attemptId,
         questionId,
         selectedOptionId,
-        isCorrect: option.isCorrect,
+        isCorrect: selectedOption.isCorrect,
       },
     });
 
-    return { message: 'Answer saved successfully' };
+    // Return feedback for Review Mode
+    return {
+      message: 'Answer saved successfully',
+      isCorrect: selectedOption.isCorrect,
+      correctOption: correctOption ? {
+        id: correctOption.id,
+        label: correctOption.label,
+        text: correctOption.text,
+        explanation: correctOption.explanation,
+      } : null,
+    };
   }
 
   async submitAttempt(attemptId: string, userId: string, timeSpent: number) {

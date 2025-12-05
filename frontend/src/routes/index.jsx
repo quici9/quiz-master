@@ -19,6 +19,12 @@ import Profile from '../pages/user/Profile';
 import Bookmarks from '../pages/user/Bookmarks';
 import Statistics from '../pages/user/Statistics';
 import Leaderboard from '../pages/user/Leaderboard';
+import Analytics from '../pages/Analytics';
+import QuickPractice from '../pages/practice/QuickPractice';
+import BookmarkedPractice from '../pages/practice/BookmarkedPractice';
+import WrongQuestionsPractice from '../pages/practice/WrongQuestionsPractice';
+import PracticeRunner from '../pages/practice/PracticeRunner';
+import Preferences from '../pages/user/Preferences';
 
 // Admin pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -53,6 +59,14 @@ function AppRoutes() {
           <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+
+          {/* Phase 2 Routes */}
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/practice/quick" element={<QuickPractice />} />
+          <Route path="/practice/bookmarked" element={<BookmarkedPractice />} />
+          <Route path="/practice/wrong" element={<WrongQuestionsPractice />} />
+          <Route path="/practice/:id" element={<PracticeRunner />} />
+          <Route path="/settings" element={<Preferences />} />
         </Route>
       </Route>
 

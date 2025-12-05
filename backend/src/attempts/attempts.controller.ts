@@ -2,14 +2,15 @@ import { Controller, Post, Body, Param, Get, Query } from '@nestjs/common';
 import { AttemptsService } from './attempts.service';
 import { User } from '../common/decorators/user.decorator';
 import { AttemptStatus } from '@prisma/client';
+import { StartAttemptDto } from './dto/start-attempt.dto';
 
 @Controller('attempts')
 export class AttemptsController {
-  constructor(private readonly attemptsService: AttemptsService) {}
+  constructor(private readonly attemptsService: AttemptsService) { }
 
   @Post('start')
-  async startAttempt(@Body('quizId') quizId: string, @User() user) {
-    return this.attemptsService.startAttempt(user.id, quizId);
+  async startAttempt(@Body() dto: StartAttemptDto, @User() user) {
+    return this.attemptsService.startAttempt(user.id, dto);
   }
 
   @Post(':id/answer')

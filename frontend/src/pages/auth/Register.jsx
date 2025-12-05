@@ -33,7 +33,7 @@ export default function Register() {
     const { email, password, confirmPassword, fullName } = formData;
 
     if (!fullName) newErrors.fullName = 'Full name is required';
-    
+
     if (!email) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
 
@@ -82,12 +82,12 @@ export default function Register() {
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-white">
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
           Create a new account
         </h2>
-        <p className="mt-2 text-center text-sm text-white/70">
+        <p className="mt-2 text-center text-sm text-gray-600 dark:text-white/70">
           Or{' '}
-          <Link to="/login" className="font-medium text-white hover:text-white/80 underline decoration-white/30 hover:decoration-white">
+          <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500 dark:text-white dark:hover:text-white/80 underline decoration-primary-300 dark:decoration-white/30 hover:decoration-primary-500 dark:hover:decoration-white">
             sign in to existing account
           </Link>
         </p>
@@ -127,7 +127,7 @@ export default function Register() {
               required
               error={errors.password}
             />
-            <p className="text-xs text-white/50 mt-[-10px] mb-4">
+            <p className="text-xs text-gray-500 dark:text-white/50 mt-[-10px] mb-4">
               Min 8 chars, 1 uppercase, 1 lowercase, 1 number
             </p>
 

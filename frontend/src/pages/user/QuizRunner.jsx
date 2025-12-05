@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import attemptService from '../../services/attempt.service';
 import questionService from '../../services/question.service';
 import quizService from '../../services/quiz.service';
@@ -14,10 +14,14 @@ import Loading from '../../components/common/Loading';
 import Modal from '../../components/common/Modal';
 import toast from 'react-hot-toast';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { useAutoSave } from '../../hooks/useAutoSave';
+import SaveIndicator from '../../components/common/SaveIndicator';
+import RecoveryDialog from '../../components/common/RecoveryDialog';
 
 export default function QuizRunner() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const resumeAttemptId = searchParams.get('attemptId');
 
@@ -32,7 +36,52 @@ export default function QuizRunner() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const hasInitialized = useRef(false);
 
+  // Review Mode state
+  const [reviewMode, setReviewMode] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [currentFeedback, setCurrentFeedback] = useState(null);
+  const [firstAnswerGiven, setFirstAnswerGiven] = useState({});
+
   const { time, start: startTimer, stop: stopTimer, setTime } = useTimer(0, quiz?.timeLimit, () => handleAutoSubmit());
+
+  // Auto-save integration
+  const quizData = { currentQuestionIndex: currentIndex, answers, timeSpent: time };
+  const { isSaving, lastSaved, error: saveError, loadSavedProgress, clearSavedProgress } = useAutoSave(attemptId, quizData);
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [recoveredData, setRecoveredData] = useState(null);
+
+  // Check for saved progress on mount/init
+  useEffect(() => {
+    const checkRecovery = async () => {
+      if (attemptId && !loading && !submitting) {
+        const saved = await loadSavedProgress();
+        if (saved && saved.timestamp > Date.now() - 24 * 60 * 60 * 1000) { // Only recover if less than 24h old
+          // Simple check: if saved answers count > current answers count, or just offer it
+          if (Object.keys(saved.answers || {}).length > Object.keys(answers).length) {
+            setRecoveredData(saved);
+            setShowRecovery(true);
+          }
+        }
+      }
+    };
+    checkRecovery();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attemptId, loading]);
+
+  const handleRecover = () => {
+    if (recoveredData) {
+      if (recoveredData.answers) setAnswers(recoveredData.answers);
+      if (recoveredData.currentQuestionIndex) setCurrentIndex(recoveredData.currentQuestionIndex);
+      if (recoveredData.timeSpent) setTime(recoveredData.timeSpent);
+      toast.success('Progress restored!');
+    }
+    setShowRecovery(false);
+  };
+
+  const handleDiscardRecovery = () => {
+    clearSavedProgress();
+    setShowRecovery(false);
+  };
 
   useEffect(() => {
     // Use quiz ID as key to track initialization per quiz
@@ -84,8 +133,8 @@ export default function QuizRunner() {
           return;
         }
 
-        // Load questions
-        const questionsRes = await questionService.getQuestionsByQuiz(id);
+        // Load questions for this specific attempt
+        const questionsRes = await questionService.getQuestionsByAttempt(resumeAttemptId);
 
         setAttemptId(resumeAttemptId);
         setQuiz(attemptRes.data.quiz);
@@ -102,15 +151,21 @@ export default function QuizRunner() {
 
       } else {
         // Start new attempt (or resume if exists)
-        const attemptRes = await attemptService.startAttempt({ quizId: id });
+        const config = location.state?.config;
+        const attemptRes = await attemptService.startAttempt({ quizId: id, config });
         const newAttemptId = attemptRes.data.attemptId;
         const isResumed = attemptRes.data.isResumed;
+
+        // Set Review Mode from config
+        if (config?.reviewMode) {
+          setReviewMode(true);
+        }
 
         if (isResumed) {
           // Automatically resume existing attempt
           toast.info('Resuming your previous attempt...');
           const attemptDetailRes = await attemptService.getAttemptById(newAttemptId);
-          const questionsRes = await questionService.getQuestionsByQuiz(id);
+          const questionsRes = await questionService.getQuestionsByAttempt(newAttemptId);
 
           setAttemptId(newAttemptId);
           setQuiz(attemptDetailRes.data.quiz || questionsRes.data.quiz);
@@ -125,7 +180,7 @@ export default function QuizRunner() {
         } else {
           // Brand new attempt
           const [questionsRes, quizRes] = await Promise.all([
-            questionService.getQuestionsByQuiz(id),
+            questionService.getQuestionsByAttempt(newAttemptId),
             quizService.getQuizById(id)
           ]);
 
@@ -154,14 +209,35 @@ export default function QuizRunner() {
     const question = questions[currentIndex];
     const questionId = question.id;
 
+    // In Review Mode, only allow first answer
+    if (reviewMode && firstAnswerGiven[questionId]) {
+      return;
+    }
+
     // Optimistic update
     setAnswers(prev => ({ ...prev, [questionId]: optionId }));
 
+    // Mark that first answer has been given for this question in Review Mode
+    if (reviewMode) {
+      setFirstAnswerGiven(prev => ({ ...prev, [questionId]: true }));
+    }
+
     try {
-      await attemptService.answerQuestion(attemptId, {
+      const response = await attemptService.answerQuestion(attemptId, {
         questionId,
         selectedOptionId: optionId,
       });
+
+      // Show instant feedback in Review Mode
+      if (reviewMode) {
+        // Use backend response which includes isCorrect and correctOption
+        setCurrentFeedback({
+          isCorrect: response.data.isCorrect,
+          explanation: response.data.correctOption?.explanation || question.explanation,
+          correctOption: response.data.correctOption,
+        });
+        setShowFeedback(true);
+      }
     } catch (error) {
       console.error('Failed to save answer', error);
       // Optional: Revert optimistic update or show error indicator
@@ -191,12 +267,18 @@ export default function QuizRunner() {
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
+      // Reset feedback when moving to next question
+      setShowFeedback(false);
+      setCurrentFeedback(null);
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
+      // Reset feedback when moving to previous question
+      setShowFeedback(false);
+      setCurrentFeedback(null);
     }
   };
 
@@ -209,6 +291,7 @@ export default function QuizRunner() {
     stopTimer();
     try {
       await attemptService.submitAttempt(attemptId, { timeSpent: time });
+      await clearSavedProgress(); // Clear auto-save on submit
       toast.success('Quiz submitted successfully!');
       navigate(`/quiz/result/${attemptId}`);
     } catch (error) {
@@ -260,11 +343,11 @@ export default function QuizRunner() {
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}
-      <header className="glass sticky top-0 z-20 border-b border-white/10">
+      <header className="glass sticky top-0 z-20 border-b border-gray-200 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-white hidden sm:block">{quiz.title}</h1>
-            <div className="text-sm text-gray-400">
+            <h1 className="text-lg font-bold text-gray-900 dark:text-white hidden sm:block">{quiz.title}</h1>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               Question {currentIndex + 1} of {questions.length}
             </div>
           </div>
@@ -274,10 +357,11 @@ export default function QuizRunner() {
             <Button size="sm" onClick={handleSubmitClick} variant="primary">
               Submit Quiz
             </Button>
+            <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} error={saveError} />
           </div>
         </div>
         {/* Progress bar */}
-        <div className="w-full bg-white/10 h-1">
+        <div className="w-full bg-gray-200 dark:bg-white/10 h-1">
           <div
             className="bg-primary-500 h-1 transition-all duration-300 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
             style={{ width: `${progress}%` }}
@@ -294,27 +378,79 @@ export default function QuizRunner() {
             onSelectOption={handleSelectOption}
             isBookmarked={!!bookmarks[currentQuestion.id]}
             onToggleBookmark={toggleBookmark}
+            disabled={reviewMode && firstAnswerGiven[currentQuestion.id]}
+            reviewModeFeedback={reviewMode && showFeedback && currentFeedback ? {
+              isCorrect: currentFeedback.isCorrect,
+              correctOptionId: currentFeedback.correctOption?.id
+            } : null}
           />
 
-          <div className="flex justify-between items-center">
-            <Button
-              variant="secondary"
-              onClick={handlePrevious}
-              disabled={currentIndex === 0}
-            >
-              <ArrowLeftIcon className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
+          {/* Review Mode Feedback */}
+          {reviewMode && showFeedback && currentFeedback && (
+            <div className={`glass rounded-2xl p-6 border-2 animate-fade-in ${currentFeedback.isCorrect
+              ? 'border-success-500 bg-success-50 dark:border-success-500/50 dark:bg-success-500/10'
+              : 'border-danger-500 bg-danger-50 dark:border-danger-500/50 dark:bg-danger-500/10'
+              }`}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentFeedback.isCorrect
+                  ? 'bg-success-100 text-success-600 dark:bg-success-500/20 dark:text-success-400'
+                  : 'bg-danger-100 text-danger-600 dark:bg-danger-500/20 dark:text-danger-400'
+                  }`}>
+                  {currentFeedback.isCorrect ? '✓' : '✗'}
+                </div>
+                <div>
+                  <h4 className={`text-lg font-bold ${currentFeedback.isCorrect ? 'text-success-700 dark:text-success-400' : 'text-danger-700 dark:text-danger-400'
+                    }`}>
+                    {currentFeedback.isCorrect ? 'Correct!' : 'Incorrect'}
+                  </h4>
+                  {!currentFeedback.isCorrect && currentFeedback.correctOption && (
+                    <p className="text-sm text-gray-600 dark:text-white/60">
+                      Correct answer: {currentFeedback.correctOption.label}. {currentFeedback.correctOption.text}
+                    </p>
+                  )}
+                </div>
+              </div>
 
-            <Button
-              variant="primary"
-              onClick={handleNext}
-              disabled={currentIndex === questions.length - 1}
-            >
-              Next
-              <ArrowRightIcon className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
+              {currentFeedback.explanation && (
+                <div className="mb-4">
+                  <h5 className="text-sm font-medium text-gray-900 dark:text-white/80 mb-2">💡 Explanation:</h5>
+                  <p className="text-gray-700 dark:text-white/70 leading-relaxed">{currentFeedback.explanation}</p>
+                </div>
+              )}
+
+              <Button
+                onClick={handleNext}
+                disabled={currentIndex === questions.length - 1}
+                className="w-full justify-center"
+              >
+                {currentIndex === questions.length - 1 ? 'Last Question' : 'Next Question'}
+                <ArrowRightIcon className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          )}
+
+          {/* Navigation buttons - hide in review mode when feedback is showing */}
+          {!(reviewMode && showFeedback) && (
+            <div className="flex justify-between items-center">
+              <Button
+                variant="secondary"
+                onClick={handlePrevious}
+                disabled={currentIndex === 0}
+              >
+                <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                Previous
+              </Button>
+
+              <Button
+                variant="primary"
+                onClick={handleNext}
+                disabled={currentIndex === questions.length - 1}
+              >
+                Next
+                <ArrowRightIcon className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -336,12 +472,12 @@ export default function QuizRunner() {
         title="Submit Quiz?"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
-            You have answered <span className="font-bold text-white">{Object.keys(answers).length}</span> out of <span className="font-bold text-white">{questions.length}</span> questions.
+          <p className="text-gray-600 dark:text-gray-300">
+            You have answered <span className="font-bold text-gray-900 dark:text-white">{Object.keys(answers).length}</span> out of <span className="font-bold text-gray-900 dark:text-white">{questions.length}</span> questions.
           </p>
 
           {Object.keys(answers).length < questions.length && (
-            <p className="text-yellow-200 bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl text-sm">
+            <p className="text-yellow-800 bg-yellow-50 border border-yellow-200 dark:text-yellow-200 dark:bg-yellow-500/10 dark:border-yellow-500/20 p-4 rounded-xl text-sm">
               ⚠️ You have unanswered questions. Are you sure you want to submit?
             </p>
           )}
@@ -356,6 +492,13 @@ export default function QuizRunner() {
           </div>
         </div>
       </Modal>
-    </div>
+
+      <RecoveryDialog
+        isOpen={showRecovery}
+        onRecover={handleRecover}
+        onDiscard={handleDiscardRecovery}
+        lastSavedTime={recoveredData?.timestamp}
+      />
+    </div >
   );
 }

@@ -56,6 +56,10 @@ model User {
   bookmarks   QuestionBookmark[]
   leaderboard Leaderboard[]
   
+  // Phase 2
+  practiceSessions PracticeSession[]
+  preferences      UserPreferences?
+  
   @@map("users")
   @@index([email])
 }
@@ -135,6 +139,9 @@ model Question {
   answers   AttemptAnswer[]
   bookmarks QuestionBookmark[]
   
+  // Phase 2
+  practiceSessions PracticeSession[] // Implicit many-to-many
+  
   @@map("questions")
   @@index([quizId])
   @@index([quizId, order])
@@ -190,6 +197,10 @@ model QuizAttempt {
   tabSwitchCount     Int     @default(0)
   suspiciousActivity Boolean @default(false)
   
+  // Configuration Snapshot (Phase 2)
+  configSnapshot    Json?    // Store config used for this attempt
+  selectedQuestions String[] // Array of questionIds (in order shown)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -214,6 +225,10 @@ model AttemptAnswer {
   
   // Result
   isCorrect Boolean @default(false)
+  
+  // Tracking (Phase 2)
+  attemptNumber    Int     @default(1)
+  correctedOnRetry Boolean @default(false)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -273,4 +288,72 @@ model Leaderboard {
   @@unique([userId, period])
   @@index([period, rank])
   @@index([period, score])
+}
+
+// ============================================
+// PRACTICE MODE
+// ============================================
+
+enum PracticeType {
+  QUICK
+  BOOKMARKED
+  WRONG
+}
+
+model PracticeSession {
+  id             String       @id @default(uuid())
+  userId         String
+  type           PracticeType
+  status         AttemptStatus @default(IN_PROGRESS)
+  
+  // Results
+  score          Int?
+  totalQuestions Int?
+  timeSpent      Int?         // Seconds
+  
+  startedAt      DateTime     @default(now())
+  completedAt    DateTime?
+  
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questions Question[] // Implicit many-to-many
+  
+  @@map("practice_sessions")
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+}
+
+// ============================================
+// USER PREFERENCES
+// ============================================
+
+model UserPreferences {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  
+  // Appearance
+  darkMode        Boolean @default(false)
+  fontSize        String  @default("medium")  // small, medium, large
+  
+  // Quiz defaults
+  defaultShuffle  Boolean @default(true)
+  reviewMode      Boolean @default(false)
+  showExplanations Boolean @default(true)
+  
+  // Quiz configuration defaults
+  defaultQuestionCount Int?   // null = full quiz
+  defaultShuffleQuestions Boolean @default(true)
+  defaultShuffleOptions Boolean @default(false)
+  
+  // Notifications
+  emailReminders  Boolean @default(true)
+  browserNotify   Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_preferences")
 }

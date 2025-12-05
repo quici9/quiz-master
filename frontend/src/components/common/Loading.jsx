@@ -8,7 +8,7 @@ export default function Loading({ size = 'md', className = '' }) {
   return (
     <div className={`flex justify-center items-center ${className}`}>
       <div
-        className={`${sizeClasses[size]} border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin`}
+        className={`${sizeClasses[size]} border-4 border-gray-200 dark:border-white/20 border-t-primary-600 rounded-full animate-spin`}
       />
     </div>
   );

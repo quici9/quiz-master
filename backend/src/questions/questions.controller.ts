@@ -3,7 +3,7 @@ import { QuestionsService } from './questions.service';
 
 @Controller('questions')
 export class QuestionsController {
-  constructor(private readonly questionsService: QuestionsService) {}
+  constructor(private readonly questionsService: QuestionsService) { }
 
   @Get('quiz/:quizId')
   async findByQuiz(
@@ -19,6 +19,23 @@ export class QuestionsController {
 
     return {
       quizId,
+      totalQuestions: questions.length,
+      questions,
+    };
+  }
+
+  @Get('attempt/:attemptId')
+  async findByAttempt(
+    @Param('attemptId') attemptId: string,
+    @Query('shuffleOptions') shuffleOptions?: string,
+  ) {
+    const questions = await this.questionsService.getQuestionsForAttempt(
+      attemptId,
+      shuffleOptions === 'true',
+    );
+
+    return {
+      attemptId,
       totalQuestions: questions.length,
       questions,
     };

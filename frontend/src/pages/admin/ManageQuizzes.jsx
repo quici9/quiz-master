@@ -37,14 +37,28 @@ export default function ManageQuizzes() {
   };
 
   const confirmDelete = async () => {
+    const quizId = deleteModal.quizId;
+
     try {
-      await adminService.deleteQuiz(deleteModal.quizId);
-      toast.success('Quiz deleted successfully');
-      fetchQuizzes();
-    } catch (error) {
-      toast.error('Failed to delete quiz');
-    } finally {
+      // Immediately remove from UI for instant feedback
+      setQuizzes(prevQuizzes => prevQuizzes.filter(q => q.id !== quizId));
+
+      // Close modal first
       setDeleteModal({ show: false, quizId: null, title: '' });
+
+      // Delete from backend
+      await adminService.deleteQuiz(quizId);
+      toast.success('Quiz deleted successfully');
+
+      // Force refresh with cache-busting to bypass stale cache
+      // Add timestamp to ensure fresh data
+      const timestamp = Date.now();
+      const response = await quizService.getQuizzes({ limit: 100, _t: timestamp });
+      setQuizzes(response.data.quizzes || []);
+    } catch (error) {
+      // On error, refresh to get accurate list
+      toast.error('Failed to delete quiz');
+      fetchQuizzes();
     }
   };
 
@@ -53,7 +67,7 @@ export default function ManageQuizzes() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
           Manage Quizzes
         </h1>
         <Link to="/admin/upload">
@@ -64,58 +78,58 @@ export default function ManageQuizzes() {
         </Link>
       </div>
 
-      <Card className="overflow-hidden p-0 border-white/10">
+      <Card className="overflow-hidden p-0 border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/10">
-            <thead className="bg-white/5">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-white/10">
+            <thead className="bg-gray-50 dark:bg-white/5">
               <tr>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Title
                 </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Category
                 </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Questions
                 </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Created At
                 </th>
-                <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-gray-200 dark:divide-white/5">
               {quizzes.length > 0 ? (
                 quizzes.map((quiz) => (
-                  <tr key={quiz.id} className="hover:bg-white/5 transition-colors">
+                  <tr key={quiz.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-white">{quiz.title}</div>
-                      <div className="text-xs text-gray-400 line-clamp-1">{quiz.description}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">{quiz.title}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{quiz.description}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      <span className="px-2 py-1 rounded-full bg-white/5 border border-white/10 text-xs">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      <span className="px-2 py-1 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs">
                         {quiz.category?.name || 'Uncategorized'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {quiz.questionsCount || quiz.totalQuestions || 0}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {formatDate(quiz.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end gap-2">
-                        <Link to={`/admin/quizzes/${quiz.id}/edit`} className="text-primary-400 hover:text-primary-300 p-1 hover:bg-white/10 rounded transition-colors" title="Edit">
+                        <Link to={`/admin/quizzes/${quiz.id}/edit`} className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded transition-colors" title="Edit">
                           <PencilIcon className="w-5 h-5" />
                         </Link>
-                        <Link to={`/admin/quizzes/${quiz.id}/analytics`} className="text-blue-400 hover:text-blue-300 p-1 hover:bg-white/10 rounded transition-colors" title="Analytics">
+                        <Link to={`/admin/quizzes/${quiz.id}/analytics`} className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded transition-colors" title="Analytics">
                           <ChartBarIcon className="w-5 h-5" />
                         </Link>
                         <button
                           onClick={() => handleDeleteClick(quiz)}
-                          className="text-danger-400 hover:text-danger-300 p-1 hover:bg-white/10 rounded transition-colors"
+                          className="text-danger-600 hover:text-danger-500 dark:text-danger-400 dark:hover:text-danger-300 p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded transition-colors"
                           title="Delete"
                         >
                           <TrashIcon className="w-5 h-5" />
@@ -142,10 +156,10 @@ export default function ManageQuizzes() {
         title="Delete Quiz"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
+          <p className="text-gray-600 dark:text-gray-300">
             Are you sure you want to delete "<strong>{deleteModal.title}</strong>"?
           </p>
-          <p className="text-danger-200 bg-danger-500/10 border border-danger-500/20 p-4 rounded-xl text-sm">
+          <p className="text-danger-700 bg-danger-50 border border-danger-200 dark:text-danger-200 dark:bg-danger-500/10 dark:border-danger-500/20 p-4 rounded-xl text-sm">
             Warning: This action cannot be undone. All questions, options, and user attempts associated with this quiz will be permanently deleted.
           </p>
           <div className="flex justify-end gap-3 mt-6">

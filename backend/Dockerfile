@@ -10,7 +10,7 @@ RUN apt-get update -y && \
 COPY package*.json ./
 COPY prisma ./prisma/
 
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 COPY . .
 

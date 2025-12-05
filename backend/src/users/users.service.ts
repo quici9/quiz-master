@@ -3,11 +3,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from '../auth/dto/register.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(registerDto: RegisterDto) {
     const existingUser = await this.prisma.user.findUnique({
@@ -98,5 +99,41 @@ export class UsersService {
     });
 
     return { message: 'Password changed successfully' };
+  }
+  async getPreferences(userId: string) {
+    const prefs = await this.prisma.userPreferences.findUnique({
+      where: { userId },
+    });
+
+    if (!prefs) {
+      // Return defaults if no preferences exist
+      return {
+        darkMode: false,
+        fontSize: 'medium',
+        defaultShuffle: true,
+        reviewMode: false,
+        showExplanations: true,
+        defaultQuestionCount: null,
+        defaultShuffleQuestions: true,
+        defaultShuffleOptions: false,
+        emailReminders: true,
+        browserNotify: false,
+      };
+    }
+
+    return prefs;
+  }
+
+  async updatePreferences(userId: string, dto: UpdatePreferencesDto) {
+    return this.prisma.userPreferences.upsert({
+      where: { userId },
+      create: {
+        userId,
+        ...dto,
+      },
+      update: {
+        ...dto,
+      },
+    });
   }
 }

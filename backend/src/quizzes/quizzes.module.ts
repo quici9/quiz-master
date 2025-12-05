@@ -6,6 +6,6 @@ import { ParserService } from './services/parser.service';
 @Module({
   controllers: [QuizzesController],
   providers: [QuizzesService, ParserService],
-  exports: [QuizzesService],
+  exports: [QuizzesService, ParserService],
 })
 export class QuizzesModule { }

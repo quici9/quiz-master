@@ -60,7 +60,7 @@ export default function QuizList() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-white">Browse Quizzes</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Browse Quizzes</h1>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <Input
@@ -73,7 +73,7 @@ export default function QuizList() {
           <select
             value={filters.difficulty}
             onChange={(e) => handleFilterChange('difficulty', e.target.value)}
-            className="input w-full sm:w-40 bg-white/5 text-white border-white/10"
+            className="input w-full sm:w-40 bg-white dark:bg-white/5 text-gray-900 dark:text-white border-gray-200 dark:border-white/10"
           >
             <option value="" className="text-gray-900">All Difficulties</option>
             <option value="EASY" className="text-gray-900">Easy</option>
@@ -96,10 +96,10 @@ export default function QuizList() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 glass rounded-2xl">
-              <FunnelIcon className="mx-auto h-12 w-12 text-white/40" />
-              <h3 className="mt-2 text-sm font-medium text-white">No quizzes found</h3>
-              <p className="mt-1 text-sm text-white/60">
+            <div className="text-center py-12 glass rounded-2xl border border-gray-200 dark:border-white/10">
+              <FunnelIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-white/40" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No quizzes found</h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
                 Try adjusting your search or filters.
               </p>
               <div className="mt-6">

@@ -52,6 +52,10 @@ services:
 
       # Upload
       MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+
+      # Redis
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
     ports:
       - "${BACKEND_PORT:-4000}:${BACKEND_PORT:-4000}"
     depends_on:
@@ -101,6 +105,29 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: quiz-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    networks:
+      - quiz-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 networks:
   quiz-network:
     driver: bridge
@@ -109,3 +136,5 @@ networks:
 volumes:
   postgres-data:
     name: quiz-postgres-data
+  redis-data:
+    name: quiz-redis-data

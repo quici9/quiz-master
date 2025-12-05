@@ -1,3 +1,4 @@
+require('newrelic');
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -8,8 +9,11 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   const configService = app.get(ConfigService);
 
   // Security
@@ -46,7 +50,7 @@ async function bootstrap() {
   // Start server
   const port = configService.get('PORT') || 4000;
   await app.listen(port);
-  
+
   console.log(`🚀 Backend running on http://localhost:${port}/api`);
 }
 

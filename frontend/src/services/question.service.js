@@ -5,6 +5,11 @@ const questionService = {
   getQuestionsByQuiz: async (quizId, params = {}) => {
     return api.get(`/questions/quiz/${quizId}`, { params });
   },
+
+  // Get questions for a specific attempt (respects selectedQuestions)
+  getQuestionsByAttempt: async (attemptId, params = {}) => {
+    return api.get(`/questions/attempt/${attemptId}`, { params });
+  },
 };
 
 export default questionService;

@@ -6,11 +6,17 @@ import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { QuizFilterDto } from './dto/quiz-filter.dto';
 import { Prisma, AttemptStatus } from '@prisma/client';
 
+import { CacheService } from '../cache/cache.service';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+
 @Injectable()
 export class QuizzesService {
   constructor(
     private prisma: PrismaService,
     private parserService: ParserService,
+    private cacheService: CacheService,
+    @InjectQueue('quiz-processing') private quizQueue: Queue,
   ) { }
 
   async importQuiz(file: Express.Multer.File, dto: ImportQuizDto, adminEmail: string) {
@@ -25,122 +31,94 @@ export class QuizzesService {
       throw new BadRequestException('File size exceeds 10MB');
     }
 
-    // Parse file
-    const parsedQuiz = await this.parserService.parseDocx(file.buffer);
-
-    // Create quiz with questions in transaction
-    const quiz = await this.prisma.$transaction(async (tx) => {
-      // Create quiz
-      const createdQuiz = await tx.quiz.create({
-        data: {
-          title: dto.title,
-          description: dto.description,
-          categoryId: dto.categoryId,
-          totalQuestions: parsedQuiz.totalValid,
-          createdBy: adminEmail,
-          fileName: file.originalname,
-        },
-      });
-
-      // Create questions with options
-      for (const q of parsedQuiz.questions) {
-        await tx.question.create({
-          data: {
-            quizId: createdQuiz.id,
-            text: q.text,
-            order: q.order,
-            options: {
-              create: q.options.map(opt => ({
-                label: opt.label,
-                text: opt.text,
-                isCorrect: opt.label === q.correctAnswer,
-              })),
-            },
-          },
-        });
-      }
-
-      return createdQuiz;
+    // Add job to queue
+    const job = await this.quizQueue.add('parse-word', {
+      fileBuffer: file.buffer.toString('base64'), // Redis stores JSON, so encode buffer
+      dto,
+      adminEmail,
+      fileName: file.originalname,
+    }, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 2000,
+      },
+      removeOnComplete: 100,
+      removeOnFail: 500,
     });
 
-    const response = {
-      quiz: {
-        id: quiz.id,
-        title: quiz.title,
-        description: quiz.description,
-        totalQuestions: quiz.totalQuestions,
-        fileName: quiz.fileName,
-        createdAt: quiz.createdAt,
-      },
-      stats: {
-        questionsCreated: parsedQuiz.totalValid,
-        optionsCreated: parsedQuiz.questions.reduce((sum, q) => sum + q.options.length, 0),
-        totalParsed: parsedQuiz.totalParsed,
-        errors: parsedQuiz.errors,
-      },
+    return {
+      message: 'File uploaded successfully. Processing started.',
+      jobId: job.id,
+      status: 'processing',
     };
-    return response;
   }
 
-  async findAll(filterDto: QuizFilterDto) {
-    const where: Prisma.QuizWhereInput = {
-      isPublished: true,
-    };
+  async findAll(filters?: {
+    search?: string;
+    difficulty?: string;
+    categoryId?: string;
+    limit?: number;
+    offset?: number;
+  }) {
+    const { search, difficulty, categoryId, limit = 20, offset = 0 } = filters || {};
 
-    if (filterDto.search) {
+    // DISABLE CACHING for quiz list to prevent stale data after delete
+    // Cache invalidation doesn't work reliably, so we skip caching entirely
+    // This is acceptable as quiz list queries are not expensive
+
+    // Build query
+    const where: any = {};
+    if (search) {
       where.OR = [
-        { title: { contains: filterDto.search, mode: 'insensitive' } },
-        { description: { contains: filterDto.search, mode: 'insensitive' } },
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
       ];
     }
-
-    if (filterDto.categoryId) {
-      where.categoryId = filterDto.categoryId;
+    if (difficulty) {
+      where.difficulty = difficulty;
     }
-
-    if (filterDto.difficulty) {
-      where.difficulty = filterDto.difficulty;
+    if (categoryId) {
+      where.categoryId = categoryId;
     }
-
-    const page = filterDto.page ?? 1;
-    const limit = filterDto.limit ?? 10;
-    const skip = (page - 1) * limit;
-    const take = limit;
 
     const [quizzes, total] = await Promise.all([
       this.prisma.quiz.findMany({
         where,
-        skip,
-        take,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          totalQuestions: true,
-          difficulty: true,
-          timeLimit: true,
-          category: {
-            select: { id: true, name: true, slug: true },
+        include: {
+          category: true,
+          _count: {
+            select: { questions: true },
           },
-          createdAt: true,
         },
+        orderBy: { createdAt: 'desc' },
+        take: Number(limit),
+        skip: Number(offset),
       }),
       this.prisma.quiz.count({ where }),
     ]);
 
     return {
-      quizzes,
+      quizzes: quizzes.map(quiz => ({
+        ...quiz,
+        questionsCount: quiz._count.questions,
+        totalQuestions: quiz._count.questions,
+      })),
       pagination: {
         total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        limit: Number(limit),
+        offset: Number(offset),
       },
     };
   }
 
   async findOne(id: string) {
+    const cacheKey = `quizzes:detail:${id}`;
+    const cached = await this.cacheService.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const quiz = await this.prisma.quiz.findUnique({
       where: { id },
       include: {
@@ -165,13 +143,16 @@ export class QuizzesService {
       ? completedAttempts.reduce((sum, a) => sum + (a.score ?? 0), 0) / completedAttempts.length
       : 0;
 
-    return {
+    const result = {
       ...quiz,
       stats: {
         totalAttempts: quiz._count.attempts,
         averageScore: Math.round(averageScore * 10) / 10,
       },
     };
+
+    await this.cacheService.set(cacheKey, result, 3600 * 1000); // 1 hour
+    return result;
   }
 
   async update(id: string, dto: UpdateQuizDto) {
@@ -197,6 +178,42 @@ export class QuizzesService {
 
     await this.prisma.quiz.delete({ where: { id } });
 
+    // Invalidate caches
+    await this.cacheService.del(`quizzes:detail:${id}`);
+    await this.cacheService.invalidate('quizzes:list:*');
+
     return { message: 'Quiz deleted successfully' };
+  }
+  async getQuizStats(id: string) {
+    const totalQuestions = await this.prisma.question.count({
+      where: { quizId: id }
+    });
+
+    // Calculate average time per question based on past attempts
+    const attempts = await this.prisma.quizAttempt.findMany({
+      where: {
+        quizId: id,
+        status: AttemptStatus.COMPLETED,
+        timeSpent: { not: null }
+      },
+      select: { timeSpent: true, totalQuestions: true },
+      take: 100 // Limit to last 100 attempts
+    });
+
+    let avgTimePerQuestion = 60; // Default 1 minute
+
+    if (attempts.length > 0) {
+      const totalTime = attempts.reduce((sum, a) => sum + (a.timeSpent || 0), 0);
+      const totalQs = attempts.reduce((sum, a) => sum + a.totalQuestions, 0);
+      if (totalQs > 0) {
+        avgTimePerQuestion = totalTime / totalQs;
+      }
+    }
+
+    return {
+      totalQuestions,
+      avgTimePerQuestion: Math.round(avgTimePerQuestion),
+      avgQuizTime: Math.ceil((avgTimePerQuestion * totalQuestions) / 60)
+    };
   }
 }

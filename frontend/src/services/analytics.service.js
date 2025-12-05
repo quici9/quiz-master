@@ -1,14 +1,19 @@
 import api from './api';
 
 const analyticsService = {
-  // Get user statistics
-  getUserStats: async () => {
-    return api.get('/analytics/users/me/stats');
+  // Get performance by topic
+  getTopicPerformance: async () => {
+    return api.get('/analytics/topics');
   },
-  
-  // Get quiz analytics (admin only)
-  getQuizAnalytics: async (quizId) => {
-    return api.get(`/analytics/quizzes/${quizId}/stats`);
+
+  // Get score trend over time
+  getScoreTrend: async (days = 30) => {
+    return api.get(`/analytics/trend?days=${days}`);
+  },
+
+  // Get weakest topics
+  getWeakestTopics: async (limit = 3) => {
+    return api.get(`/analytics/weakest?limit=${limit}`);
   },
 };
 

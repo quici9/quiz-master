@@ -27,21 +27,25 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      // In a real scenario, these might fail individually, so Promise.allSettled might be better,
-      // but for simplicity we'll use Promise.all and handle errors globally or per block if needed.
-      // Note: Backend endpoints might not exist yet, so we'll add fallbacks.
-      
-      const [statsRes, quizzesRes, attemptsRes] = await Promise.all([
-        analyticsService.getUserStats().catch(() => ({ data: { totalAttempts: 0, averageScore: 0 } })),
+      // Fetch quizzes and attempts
+      const [quizzesRes, attemptsRes] = await Promise.all([
         quizService.getQuizzes({ limit: 5 }).catch(() => ({ data: { quizzes: [] } })),
-        attemptService.getMyAttempts({ limit: 5 }).catch(() => ({ data: { attempts: [] } })),
+        attemptService.getMyAttempts({ limit: 5 }).catch(() => ({ data: { attempts: [], pagination: { total: 0 } } })),
       ]);
 
+      // Calculate stats from attempts
+      const allAttempts = attemptsRes.data?.attempts || [];
+      const completedAttempts = allAttempts.filter(a => a.score !== null && a.score !== undefined);
+      const totalAttempts = attemptsRes.data?.pagination?.total || allAttempts.length;
+      const averageScore = completedAttempts.length > 0
+        ? completedAttempts.reduce((sum, a) => sum + (a.score || 0), 0) / completedAttempts.length
+        : 0;
+
       setStats({
-        totalAttempts: statsRes.data?.totalAttempts || 0,
-        averageScore: statsRes.data?.averageScore || 0,
+        totalAttempts,
+        averageScore,
         recentQuizzes: quizzesRes.data?.quizzes || [],
-        recentAttempts: attemptsRes.data?.attempts || [],
+        recentAttempts: allAttempts,
       });
     } catch (error) {
       console.error(error);
@@ -62,7 +66,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Welcome back, {user?.fullName || 'User'}! 👋
         </h1>
         <Link to="/quizzes">
@@ -72,33 +76,33 @@ export default function Dashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="flex items-center p-6">
-          <div className="p-3 rounded-full bg-blue-500/20 text-blue-200 mr-4">
+        <Card className="flex items-center p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+          <div className="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-200 mr-4">
             <BookOpenIcon className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm text-white/60 font-medium">Total Attempts</p>
-            <p className="text-2xl font-bold text-white">{stats.totalAttempts}</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">Total Attempts</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalAttempts}</p>
           </div>
         </Card>
 
-        <Card className="flex items-center p-6">
-          <div className="p-3 rounded-full bg-green-500/20 text-green-200 mr-4">
+        <Card className="flex items-center p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+          <div className="p-3 rounded-full bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-200 mr-4">
             <ChartBarIcon className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm text-white/60 font-medium">Average Score</p>
-            <p className="text-2xl font-bold text-white">{Math.round(stats.averageScore)}%</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">Average Score</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{Math.round(stats.averageScore)}%</p>
           </div>
         </Card>
-        
-        <Card className="flex items-center p-6">
-          <div className="p-3 rounded-full bg-yellow-500/20 text-yellow-200 mr-4">
+
+        <Card className="flex items-center p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+          <div className="p-3 rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-200 mr-4">
             <TrophyIcon className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm text-white/60 font-medium">Leaderboard Rank</p>
-            <p className="text-2xl font-bold text-white">#--</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">Leaderboard Rank</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">#--</p>
           </div>
         </Card>
       </div>
@@ -107,24 +111,24 @@ export default function Dashboard() {
         {/* Recent Quizzes */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-white">New Quizzes</h2>
-            <Link to="/quizzes" className="text-sm text-white/80 hover:text-white">View All</Link>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">New Quizzes</h2>
+            <Link to="/quizzes" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">View All</Link>
           </div>
           <div className="space-y-4">
             {stats.recentQuizzes.length > 0 ? (
               stats.recentQuizzes.map((quiz) => (
-                <Card key={quiz.id} className="hover:shadow-lg transition-shadow bg-white/5">
+                <Card key={quiz.id} className="hover:shadow-lg transition-shadow bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-white">{quiz.title}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{quiz.title}</h3>
                       <div className="flex gap-2 mt-2">
-                        <span className={`text-xs px-2 py-1 rounded-full bg-white/10 text-white/70`}>
+                        <span className={`text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-white/70`}>
                           {quiz.questionsCount || quiz.totalQuestions || 0} Qs
                         </span>
                         <span className={`text-xs px-2 py-1 rounded-full 
-                          ${quiz.difficulty === 'EASY' ? 'bg-green-500/20 text-green-200' : 
-                            quiz.difficulty === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-200' : 
-                            'bg-red-500/20 text-red-200'}`}>
+                          ${quiz.difficulty === 'EASY' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-200' :
+                            quiz.difficulty === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-200' :
+                              'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-200'}`}>
                           {quiz.difficulty}
                         </span>
                       </div>
@@ -136,8 +140,8 @@ export default function Dashboard() {
                 </Card>
               ))
             ) : (
-              <Card className="text-center py-8">
-                <p className="text-white/50">No quizzes available yet.</p>
+              <Card className="text-center py-8 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+                <p className="text-gray-500 dark:text-white/50">No quizzes available yet.</p>
               </Card>
             )}
           </div>
@@ -146,21 +150,21 @@ export default function Dashboard() {
         {/* Recent Activity */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-white">Recent Activity</h2>
-            <Link to="/history" className="text-sm text-white/80 hover:text-white">View History</Link>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Recent Activity</h2>
+            <Link to="/history" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">View History</Link>
           </div>
           <div className="space-y-4">
             {stats.recentAttempts.length > 0 ? (
               stats.recentAttempts.map((attempt) => (
-                <Card key={attempt.id} className="hover:shadow-lg transition-shadow bg-white/5">
+                <Card key={attempt.id} className="hover:shadow-lg transition-shadow bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="font-semibold text-white">{attempt.quiz?.title || 'Unknown Quiz'}</h3>
-                      <div className="flex items-center gap-2 mt-1 text-sm text-white/60">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{attempt.quiz?.title || 'Unknown Quiz'}</h3>
+                      <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-white/60">
                         <ClockIcon className="w-4 h-4" />
                         <span>{formatRelativeTime(attempt.createdAt)}</span>
                         <span>•</span>
-                        <span className={attempt.score >= 70 ? 'text-green-300' : 'text-yellow-300'}>
+                        <span className={attempt.score >= 70 ? 'text-green-600 dark:text-green-300' : 'text-yellow-600 dark:text-yellow-300'}>
                           {attempt.score}%
                         </span>
                       </div>
@@ -174,8 +178,8 @@ export default function Dashboard() {
                 </Card>
               ))
             ) : (
-              <Card className="text-center py-8">
-                <p className="text-white/50">No recent activity.</p>
+              <Card className="text-center py-8 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+                <p className="text-gray-500 dark:text-white/50">No recent activity.</p>
                 <Link to="/quizzes">
                   <Button variant="ghost" className="mt-2">Start a Quiz</Button>
                 </Link>

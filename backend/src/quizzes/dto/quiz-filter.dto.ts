@@ -31,5 +31,9 @@ export class QuizFilterDto {
   })
   @IsEnum(QuestionDifficulty)
   difficulty?: QuestionDifficulty;
-}
 
+  // Cache-busting parameter (ignored by service, just for HTTP cache)
+  @IsOptional()
+  @Type(() => Number)
+  _t?: number;
+}

@@ -12,8 +12,8 @@ export default function Layout() {
         </div>
       </main>
 
-      <footer className="glass mt-auto border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-white/60">
+      <footer className="glass mt-auto border-t border-gray-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-500 dark:text-white/60">
           © {new Date().getFullYear()} QuizMaster. All rights reserved.
         </div>
       </footer>

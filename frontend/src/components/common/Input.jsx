@@ -15,8 +15,8 @@ export default function Input({
   return (
     <div className={`mb-4 ${className}`}>
       {label && (
-        <label className="block text-sm font-medium text-white/80 mb-1">
-          {label} {required && <span className="text-danger-400">*</span>}
+        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+          {label} {required && <span className="text-danger-500 dark:text-danger-400">*</span>}
         </label>
       )}
       <input
@@ -29,7 +29,7 @@ export default function Input({
         {...props}
       />
       {error && (
-        <p className="mt-1 text-sm text-danger-300">{error}</p>
+        <p className="mt-1 text-sm text-danger-500 dark:text-danger-300">{error}</p>
       )}
     </div>
   );
