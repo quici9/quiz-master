@@ -41,6 +41,14 @@ export default function QuizRunner() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [currentFeedback, setCurrentFeedback] = useState(null);
   const [firstAnswerGiven, setFirstAnswerGiven] = useState({});
+  const feedbackRef = useRef(null);
+
+  // Auto-scroll to feedback in Review Mode (Desktop only)
+  useEffect(() => {
+    if (reviewMode && showFeedback && feedbackRef.current && window.innerWidth >= 768) {
+      feedbackRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [reviewMode, showFeedback]);
 
   const { time, start: startTimer, stop: stopTimer, setTime } = useTimer(0, quiz?.timeLimit, () => handleAutoSubmit());
 
@@ -341,7 +349,7 @@ export default function QuizRunner() {
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-40 md:pb-20">
       {/* Header */}
       <header className="glass sticky top-0 z-20 border-b border-gray-200 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -387,25 +395,27 @@ export default function QuizRunner() {
 
           {/* Review Mode Feedback */}
           {reviewMode && showFeedback && currentFeedback && (
-            <div className={`glass rounded-2xl p-6 border-2 animate-fade-in ${currentFeedback.isCorrect
-              ? 'border-success-500 bg-success-50 dark:border-success-500/50 dark:bg-success-500/10'
-              : 'border-danger-500 bg-danger-50 dark:border-danger-500/50 dark:bg-danger-500/10'
-              }`}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentFeedback.isCorrect
+            <div
+              ref={feedbackRef}
+              className={`fixed bottom-0 left-0 right-0 z-40 md:static p-4 md:p-6 border-t-2 md:border-2 md:rounded-2xl animate-slide-up md:animate-fade-in shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:shadow-none glass ${currentFeedback.isCorrect
+                ? 'border-success-500 bg-success-50/95 dark:bg-gray-900/95 md:bg-success-50 md:dark:bg-success-500/10 dark:border-success-500/50'
+                : 'border-danger-500 bg-danger-50/95 dark:bg-gray-900/95 md:bg-danger-50 md:dark:bg-danger-500/10 dark:border-danger-500/50'
+                }`}>
+              <div className="flex items-center gap-3 mb-3 md:mb-4">
+                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${currentFeedback.isCorrect
                   ? 'bg-success-100 text-success-600 dark:bg-success-500/20 dark:text-success-400'
                   : 'bg-danger-100 text-danger-600 dark:bg-danger-500/20 dark:text-danger-400'
                   }`}>
                   {currentFeedback.isCorrect ? '✓' : '✗'}
                 </div>
                 <div>
-                  <h4 className={`text-lg font-bold ${currentFeedback.isCorrect ? 'text-success-700 dark:text-success-400' : 'text-danger-700 dark:text-danger-400'
+                  <h4 className={`text-base md:text-lg font-bold ${currentFeedback.isCorrect ? 'text-success-700 dark:text-success-400' : 'text-danger-700 dark:text-danger-400'
                     }`}>
                     {currentFeedback.isCorrect ? 'Correct!' : 'Incorrect'}
                   </h4>
                   {!currentFeedback.isCorrect && currentFeedback.correctOption && (
                     <p className="text-sm text-gray-600 dark:text-white/60">
-                      Correct answer: {currentFeedback.correctOption.label}. {currentFeedback.correctOption.text}
+                      Correct answer: <span className="font-semibold">{currentFeedback.correctOption.label}</span>
                     </p>
                   )}
                 </div>
@@ -413,8 +423,8 @@ export default function QuizRunner() {
 
               {currentFeedback.explanation && (
                 <div className="mb-4">
-                  <h5 className="text-sm font-medium text-gray-900 dark:text-white/80 mb-2">💡 Explanation:</h5>
-                  <p className="text-gray-700 dark:text-white/70 leading-relaxed">{currentFeedback.explanation}</p>
+                  <h5 className="text-xs md:text-sm font-medium text-gray-900 dark:text-white/80 mb-1">💡 Explanation:</h5>
+                  <p className="text-sm md:text-base text-gray-700 dark:text-white/70 leading-relaxed">{currentFeedback.explanation}</p>
                 </div>
               )}
 
