@@ -42,9 +42,6 @@ export default function QuizRunner() {
   const [currentFeedback, setCurrentFeedback] = useState(null);
   const [firstAnswerGiven, setFirstAnswerGiven] = useState({});
   const [feedbackHistory, setFeedbackHistory] = useState({}); // Store feedback for each question
-  const feedbackRef = useRef(null);
-
-  // Removed auto-scroll to avoid interrupting user experience
 
   const { time, start: startTimer, stop: stopTimer, setTime } = useTimer(0, quiz?.timeLimit, () => handleAutoSubmit());
 
@@ -469,10 +466,8 @@ export default function QuizRunner() {
             } : null}
           />
 
-          {/* Review Mode Feedback */}
           {reviewMode && showFeedback && currentFeedback && (
             <div
-              ref={feedbackRef}
               className={`fixed bottom-0 left-0 right-0 z-40 md:static p-4 md:p-6 border-t-2 md:border-2 md:rounded-2xl animate-slide-up md:animate-fade-in shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:shadow-none glass ${currentFeedback.isCorrect
                 ? 'border-success-500 bg-success-50/95 dark:bg-gray-900/95 md:bg-success-50 md:dark:bg-success-500/10 dark:border-success-500/50'
                 : 'border-danger-500 bg-danger-50/95 dark:bg-gray-900/95 md:bg-danger-50 md:dark:bg-danger-500/10 dark:border-danger-500/50'
@@ -504,34 +499,25 @@ export default function QuizRunner() {
                 </div>
               )}
 
-              {/* Check if all questions are answered */}
-              {(() => {
-                const allAnswered = Object.keys(answers).length === questions.length;
-                const isLastQuestion = currentIndex === questions.length - 1;
-
-                if (isLastQuestion && allAnswered) {
-                  return (
-                    <Button
-                      onClick={handleSubmitClick}
-                      variant="primary"
-                      className="w-full justify-center"
-                    >
-                      Submit Quiz
-                    </Button>
-                  );
-                } else {
-                  return (
-                    <Button
-                      onClick={handleNext}
-                      disabled={isLastQuestion}
-                      className="w-full justify-center"
-                    >
-                      {isLastQuestion ? 'Last Question' : 'Next Question'}
-                      <ArrowRightIcon className="w-4 h-4 ml-2" />
-                    </Button>
-                  );
-                }
-              })()}
+              {/* Show Submit or Next button based on completion */}
+              {(currentIndex === questions.length - 1 && Object.keys(answers).length === questions.length) ? (
+                <Button
+                  onClick={handleSubmitClick}
+                  variant="primary"
+                  className="w-full justify-center"
+                >
+                  Submit Quiz
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleNext}
+                  disabled={currentIndex === questions.length - 1}
+                  className="w-full justify-center"
+                >
+                  {currentIndex === questions.length - 1 ? 'Last Question' : 'Next Question'}
+                  <ArrowRightIcon className="w-4 h-4 ml-2" />
+                </Button>
+              )}
             </div>
           )}
 
@@ -547,33 +533,24 @@ export default function QuizRunner() {
                 Previous
               </Button>
 
-              {/* Check if all questions are answered */}
-              {(() => {
-                const allAnswered = Object.keys(answers).length === questions.length;
-                const isLastQuestion = currentIndex === questions.length - 1;
-
-                if (isLastQuestion && allAnswered) {
-                  return (
-                    <Button
-                      variant="primary"
-                      onClick={handleSubmitClick}
-                    >
-                      Submit Quiz
-                    </Button>
-                  );
-                } else {
-                  return (
-                    <Button
-                      variant="primary"
-                      onClick={handleNext}
-                      disabled={isLastQuestion}
-                    >
-                      Next
-                      <ArrowRightIcon className="w-4 h-4 ml-2" />
-                    </Button>
-                  );
-                }
-              })()}
+              {/* Show Submit or Next button based on completion */}
+              {(currentIndex === questions.length - 1 && Object.keys(answers).length === questions.length) ? (
+                <Button
+                  variant="primary"
+                  onClick={handleSubmitClick}
+                >
+                  Submit Quiz
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  onClick={handleNext}
+                  disabled={currentIndex === questions.length - 1}
+                >
+                  Next
+                  <ArrowRightIcon className="w-4 h-4 ml-2" />
+                </Button>
+              )}
             </div>
           )}
         </div>
