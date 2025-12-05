@@ -1,0 +1,35 @@
+{
+    "quick": {
+        "title": "Luyện tập nhanh",
+        "description": "Luyện tập với câu hỏi ngẫu nhiên",
+        "selectDifficulty": "Chọn độ khó",
+        "selectCategory": "Chọn danh mục",
+        "allCategories": "Tất cả danh mục",
+        "numberOfQuestions": "Số câu hỏi",
+        "start": "Bắt đầu luyện tập"
+    },
+    "bookmarked": {
+        "title": "Câu hỏi đã đánh dấu",
+        "description": "Luyện tập các câu hỏi bạn đã đánh dấu",
+        "noBookmarks": "Bạn chưa đánh dấu câu hỏi nào.",
+        "start": "Bắt đầu luyện tập"
+    },
+    "wrong": {
+        "title": "Luyện câu hỏi sai",
+        "description": "Xem lại các câu hỏi bạn đã làm sai",
+        "noWrongQuestions": "Tuyệt vời! Bạn chưa làm sai câu nào.",
+        "start": "Bắt đầu luyện tập"
+    },
+    "runner": {
+        "practicing": "Đang luyện tập",
+        "bookmark": "Đánh dấu",
+        "unbookmark": "Bỏ đánh dấu",
+        "showAnswer": "Hiện đáp án",
+        "hideAnswer": "Ẩn đáp án",
+        "next": "Câu tiếp theo",
+        "finish": "Kết thúc",
+        "sessionComplete": "Hoàn thành luyện tập!",
+        "questionsCompleted": "Số câu đã làm",
+        "accuracy": "Độ chính xác"
+    }
+}

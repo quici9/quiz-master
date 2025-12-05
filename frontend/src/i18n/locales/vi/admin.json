@@ -1,0 +1,67 @@
+{
+    "dashboard": {
+        "title": "Bảng điều khiển quản trị",
+        "stats": {
+            "totalQuizzes": "Tổng số đề thi",
+            "totalUsers": "Tổng số người dùng",
+            "totalAttempts": "Tổng lượt thi",
+            "activeQuizzes": "Đề thi đang hoạt động"
+        }
+    },
+    "upload": {
+        "title": "Tải lên đề thi",
+        "instructions": "Tải lên đề thi từ file DOCX",
+        "fileFormat": "Định dạng file",
+        "formatRequirements": "Yêu cầu",
+        "dragDrop": "Kéo và thả file .docx vào đây, hoặc nhấp để chọn",
+        "uploading": "Đang tải lên...",
+        "processing": "Đang xử lý đề thi...",
+        "success": "Tải lên đề thi thành công!",
+        "errors": {
+            "noFile": "Vui lòng chọn file",
+            "invalidFormat": "Chỉ hỗ trợ file .docx",
+            "fileTooLarge": "Kích thước file vượt quá 10MB",
+            "uploadFailed": "Tải lên thất bại. Vui lòng thử lại."
+        }
+    },
+    "manage": {
+        "title": "Quản lý đề thi",
+        "table": {
+            "title": "Tiêu đề",
+            "category": "Danh mục",
+            "difficulty": "Độ khó",
+            "questions": "Số câu",
+            "created": "Ngày tạo",
+            "actions": "Thao tác"
+        },
+        "actions": {
+            "edit": "Sửa",
+            "delete": "Xóa",
+            "view": "Xem",
+            "analytics": "Thống kê"
+        },
+        "confirmDelete": "Bạn có chắc chắn muốn xóa đề thi này? Hành động này không thể hoàn tác.",
+        "deleteSuccess": "Xóa đề thi thành công",
+        "deleteFailed": "Xóa đề thi thất bại"
+    },
+    "edit": {
+        "title": "Chỉnh sửa đề thi",
+        "quizTitle": "Tiêu đề đề thi",
+        "description": "Mô tả",
+        "category": "Danh mục",
+        "difficulty": "Độ khó",
+        "timeLimit": "Thời gian (giây)",
+        "save": "Lưu thay đổi",
+        "cancel": "Hủy",
+        "success": "Cập nhật đề thi thành công",
+        "failed": "Cập nhật đề thi thất bại"
+    },
+    "analytics": {
+        "title": "Thống kê đề thi",
+        "attempts": "Tổng lượt thi",
+        "averageScore": "Điểm trung bình",
+        "completionRate": "Tỷ lệ hoàn thành",
+        "difficultyDistribution": "Phân bố độ khó",
+        "topPerformers": "Người đạt điểm cao"
+    }
+}

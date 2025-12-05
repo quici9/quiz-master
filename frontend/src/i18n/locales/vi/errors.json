@@ -1,0 +1,28 @@
+{
+    "network": {
+        "offline": "Bạn đang ngoại tuyến",
+        "connectionLost": "Mất kết nối. Vui lòng kiểm tra kết nối internet.",
+        "serverError": "Lỗi máy chủ. Vui lòng thử lại sau."
+    },
+    "quiz": {
+        "notFound": "Không tìm thấy đề thi",
+        "loadFailed": "Không thể tải đề thi",
+        "submitFailed": "Không thể nộp bài. Vui lòng thử lại."
+    },
+    "attempt": {
+        "notFound": "Không tìm thấy bài thi",
+        "notYours": "Đây không phải bài thi của bạn",
+        "alreadySubmitted": "Bài thi đã được nộp",
+        "loadFailed": "Không thể tải bài thi"
+    },
+    "auth": {
+        "unauthorized": "Bạn không có quyền truy cập tài nguyên này",
+        "sessionExpired": "Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.",
+        "invalidCredentials": "Email hoặc mật khẩu không đúng"
+    },
+    "general": {
+        "somethingWrong": "Đã có lỗi xảy ra",
+        "tryAgain": "Vui lòng thử lại",
+        "contactSupport": "Nếu vấn đề vẫn tiếp diễn, vui lòng liên hệ hỗ trợ"
+    }
+}

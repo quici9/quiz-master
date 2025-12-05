@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { XMarkIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
+    const { t } = useTranslation('quiz');
     // Ensure minimum 5 questions
     const maxQuestions = quiz.totalQuestions || quiz.questionsCount || 10;
     const defaultCount = Math.max(5, Math.min(maxQuestions, 20));
@@ -10,7 +12,7 @@ export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
         questionCount: defaultCount,
         shuffleQuestions: true,
         shuffleOptions: false,
-        reviewMode: false,
+        reviewMode: true,
     });
 
     if (!isOpen) return null;
@@ -39,14 +41,14 @@ export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
                     <div className="p-2 bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400 rounded-lg">
                         <Cog6ToothIcon className="w-6 h-6" />
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Quiz Configuration</h2>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('config.title')}</h2>
                 </div>
 
                 <div className="space-y-6">
                     {/* Question Count */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
-                            Number of Questions (Max: {maxQuestions})
+                            {t('config.numberOfQuestions')} ({t('config.max')}: {maxQuestions})
                         </label>
                         <input
                             type="range"
@@ -57,11 +59,11 @@ export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
                             className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary-500"
                         />
                         <div className="mt-2 text-right text-primary-600 dark:text-primary-400 font-medium">
-                            {config.questionCount} Questions
+                            {t('config.questionsSelected', { count: config.questionCount })}
                         </div>
                         {maxQuestions < 5 && (
                             <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
-                                ⚠️ This quiz has fewer than 5 questions
+                                ⚠️ {t('config.fewQuestionsWarning')}
                             </p>
                         )}
                     </div>
@@ -69,7 +71,7 @@ export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
                     {/* Toggles */}
                     <div className="space-y-4">
                         <label className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer">
-                            <span className="text-gray-700 dark:text-white/90">Shuffle Questions</span>
+                            <span className="text-gray-700 dark:text-white/90">{t('config.shuffleQuestions')}</span>
                             <input
                                 type="checkbox"
                                 checked={config.shuffleQuestions}
@@ -79,7 +81,7 @@ export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
                         </label>
 
                         <label className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer">
-                            <span className="text-gray-700 dark:text-white/90">Shuffle Options</span>
+                            <span className="text-gray-700 dark:text-white/90">{t('config.shuffleOptions')}</span>
                             <input
                                 type="checkbox"
                                 checked={config.shuffleOptions}
@@ -90,8 +92,8 @@ export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
 
                         <label className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer">
                             <div className="flex flex-col">
-                                <span className="text-gray-700 dark:text-white/90">Review Mode (Instant Feedback)</span>
-                                <span className="text-xs text-gray-500 dark:text-white/50 mt-0.5">See correct/incorrect answers immediately</span>
+                                <span className="text-gray-700 dark:text-white/90">{t('config.reviewMode')}</span>
+                                <span className="text-xs text-gray-500 dark:text-white/50 mt-0.5">{t('config.reviewModeDesc')}</span>
                             </div>
                             <input
                                 type="checkbox"
@@ -107,7 +109,7 @@ export default function QuizConfigModal({ isOpen, onClose, onStart, quiz }) {
                         className="btn btn-primary w-full py-3"
                         disabled={maxQuestions < 5}
                     >
-                        Start Quiz
+                        {t('config.start')}
                     </button>
                 </div>
             </div>

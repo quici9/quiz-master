@@ -1,0 +1,67 @@
+{
+    "dashboard": {
+        "title": "Admin Dashboard",
+        "stats": {
+            "totalQuizzes": "Total Quizzes",
+            "totalUsers": "Total Users",
+            "totalAttempts": "Total Attempts",
+            "activeQuizzes": "Active Quizzes"
+        }
+    },
+    "upload": {
+        "title": "Upload Quiz",
+        "instructions": "Upload Quiz from DOCX File",
+        "fileFormat": "File Format",
+        "formatRequirements": "Requirements",
+        "dragDrop": "Drag and drop a .docx file here, or click to select",
+        "uploading": "Uploading...",
+        "processing": "Processing quiz...",
+        "success": "Quiz uploaded successfully!",
+        "errors": {
+            "noFile": "Please select a file",
+            "invalidFormat": "Only .docx files are supported",
+            "fileTooLarge": "File size exceeds 10MB",
+            "uploadFailed": "Upload failed. Please try again."
+        }
+    },
+    "manage": {
+        "title": "Manage Quizzes",
+        "table": {
+            "title": "Title",
+            "category": "Category",
+            "difficulty": "Difficulty",
+            "questions": "Questions",
+            "created": "Created",
+            "actions": "Actions"
+        },
+        "actions": {
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "analytics": "Analytics"
+        },
+        "confirmDelete": "Are you sure you want to delete this quiz? This action cannot be undone.",
+        "deleteSuccess": "Quiz deleted successfully",
+        "deleteFailed": "Failed to delete quiz"
+    },
+    "edit": {
+        "title": "Edit Quiz",
+        "quizTitle": "Quiz Title",
+        "description": "Description",
+        "category": "Category",
+        "difficulty": "Difficulty",
+        "timeLimit": "Time Limit (seconds)",
+        "save": "Save Changes",
+        "cancel": "Cancel",
+        "success": "Quiz updated successfully",
+        "failed": "Failed to update quiz"
+    },
+    "analytics": {
+        "title": "Quiz Analytics",
+        "attempts": "Total Attempts",
+        "averageScore": "Average Score",
+        "completionRate": "Completion Rate",
+        "difficultyDistribution": "Difficulty Distribution",
+        "topPerformers": "Top Performers"
+    }
+}

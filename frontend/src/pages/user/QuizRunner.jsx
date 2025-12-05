@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import attemptService from '../../services/attempt.service';
 import questionService from '../../services/question.service';
 import quizService from '../../services/quiz.service';
@@ -19,6 +20,7 @@ import SaveIndicator from '../../components/common/SaveIndicator';
 import RecoveryDialog from '../../components/common/RecoveryDialog';
 
 export default function QuizRunner() {
+  const { t } = useTranslation('quiz');
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,7 +76,7 @@ export default function QuizRunner() {
       if (recoveredData.answers) setAnswers(recoveredData.answers);
       if (recoveredData.currentQuestionIndex) setCurrentIndex(recoveredData.currentQuestionIndex);
       if (recoveredData.timeSpent) setTime(recoveredData.timeSpent);
-      toast.success('Progress restored!');
+      toast.success(t('runner.progressRestored'));
     }
     setShowRecovery(false);
   };
@@ -129,7 +131,7 @@ export default function QuizRunner() {
         // Resume existing attempt
         const attemptRes = await attemptService.getAttemptById(resumeAttemptId);
         if (attemptRes.data.status !== 'IN_PROGRESS') {
-          toast.error('Attempt already completed');
+          toast.error(t('runner.attemptCompleted'));
           navigate(`/quiz/result/${resumeAttemptId}`);
           return;
         }
@@ -173,7 +175,7 @@ export default function QuizRunner() {
 
         if (isResumed) {
           // Automatically resume existing attempt
-          toast('Resuming your previous attempt...', { icon: '🔄' });
+          toast(t('runner.resumingAttempt'), { icon: '🔄' });
           const attemptDetailRes = await attemptService.getAttemptById(newAttemptId);
 
           // Get config from configSnapshot
@@ -373,18 +375,18 @@ export default function QuizRunner() {
     try {
       await attemptService.submitAttempt(attemptId, { timeSpent: time });
       await clearSavedProgress(); // Clear auto-save on submit
-      toast.success('Quiz submitted successfully!');
+      toast.success(t('runner.quizSubmitted'));
       navigate(`/quiz/result/${attemptId}`);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to submit quiz');
+      toast.error(t('runner.submitFailed'));
       setSubmitting(false);
       startTimer(); // Resume if failed
     }
   };
 
   const handleAutoSubmit = () => {
-    toast('Time limit reached! Submitting quiz...', { icon: '⏳' });
+    toast(t('runner.timesUp'), { icon: '⏳' });
     submitQuiz();
   };
 
@@ -411,8 +413,8 @@ export default function QuizRunner() {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">No questions available for this quiz.</p>
-          <Button onClick={() => navigate(`/quizzes/${id}`)}>Back to Quiz Details</Button>
+          <p className="text-gray-400 mb-4">{t('runner.noQuestions')}</p>
+          <Button onClick={() => navigate(`/quizzes/${id}`)}>{t('runner.backToDetails')}</Button>
         </div>
       </div>
     );
@@ -429,14 +431,14 @@ export default function QuizRunner() {
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-bold text-gray-900 dark:text-white hidden sm:block">{quiz.title}</h1>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Question {currentIndex + 1} of {questions.length}
+              {t('runner.question', { current: currentIndex + 1, total: questions.length })}
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <Timer timeElapsed={time} timeLimit={quiz.timeLimit} />
             <Button size="sm" onClick={handleSubmitClick} variant="primary">
-              Submit Quiz
+              {t('runner.submitQuiz')}
             </Button>
             <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} error={saveError} />
           </div>
@@ -482,11 +484,11 @@ export default function QuizRunner() {
                 <div>
                   <h4 className={`text-base md:text-lg font-bold ${currentFeedback.isCorrect ? 'text-success-700 dark:text-success-400' : 'text-danger-700 dark:text-danger-400'
                     }`}>
-                    {currentFeedback.isCorrect ? 'Correct!' : 'Incorrect'}
+                    {currentFeedback.isCorrect ? t('runner.correct') : t('runner.incorrect')}
                   </h4>
                   {!currentFeedback.isCorrect && currentFeedback.correctOption && (
                     <p className="text-sm text-gray-600 dark:text-white/60">
-                      Correct answer: <span className="font-semibold">{currentFeedback.correctOption.label}</span>
+                      {t('runner.correctAnswer')}: <span className="font-semibold">{currentFeedback.correctOption.label}</span>
                     </p>
                   )}
                 </div>
@@ -494,7 +496,7 @@ export default function QuizRunner() {
 
               {currentFeedback.explanation && (
                 <div className="mb-4">
-                  <h5 className="text-xs md:text-sm font-medium text-gray-900 dark:text-white/80 mb-1">💡 Explanation:</h5>
+                  <h5 className="text-xs md:text-sm font-medium text-gray-900 dark:text-white/80 mb-1">{t('runner.explanation')}</h5>
                   <p className="text-sm md:text-base text-gray-700 dark:text-white/70 leading-relaxed">{currentFeedback.explanation}</p>
                 </div>
               )}
@@ -506,7 +508,7 @@ export default function QuizRunner() {
                   variant="primary"
                   className="w-full justify-center"
                 >
-                  Submit Quiz
+                  {t('runner.submitQuiz')}
                 </Button>
               ) : (
                 <Button
@@ -514,7 +516,7 @@ export default function QuizRunner() {
                   disabled={currentIndex === questions.length - 1}
                   className="w-full justify-center"
                 >
-                  {currentIndex === questions.length - 1 ? 'Last Question' : 'Next Question'}
+                  {currentIndex === questions.length - 1 ? t('runner.lastQuestion') : t('runner.nextQuestion')}
                   <ArrowRightIcon className="w-4 h-4 ml-2" />
                 </Button>
               )}
@@ -530,7 +532,7 @@ export default function QuizRunner() {
                 disabled={currentIndex === 0}
               >
                 <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                Previous
+                {t('runner.previous')}
               </Button>
 
               {/* Show Submit or Next button based on completion */}
@@ -539,7 +541,7 @@ export default function QuizRunner() {
                   variant="primary"
                   onClick={handleSubmitClick}
                 >
-                  Submit Quiz
+                  {t('runner.submitQuiz')}
                 </Button>
               ) : (
                 <Button
@@ -547,7 +549,7 @@ export default function QuizRunner() {
                   onClick={handleNext}
                   disabled={currentIndex === questions.length - 1}
                 >
-                  Next
+                  {t('runner.next')}
                   <ArrowRightIcon className="w-4 h-4 ml-2" />
                 </Button>
               )}
@@ -571,25 +573,25 @@ export default function QuizRunner() {
       <Modal
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
-        title="Submit Quiz?"
+        title={t('runner.submitTitle')}
       >
         <div className="space-y-4">
           <p className="text-gray-600 dark:text-gray-300">
-            You have answered <span className="font-bold text-gray-900 dark:text-white">{Object.keys(answers).length}</span> out of <span className="font-bold text-gray-900 dark:text-white">{questions.length}</span> questions.
+            {t('runner.answeredCount', { answered: Object.keys(answers).length, total: questions.length })}
           </p>
 
           {Object.keys(answers).length < questions.length && (
             <p className="text-yellow-800 bg-yellow-50 border border-yellow-200 dark:text-yellow-200 dark:bg-yellow-500/10 dark:border-yellow-500/20 p-4 rounded-xl text-sm">
-              ⚠️ You have unanswered questions. Are you sure you want to submit?
+              ⚠️ {t('runner.unansweredWarning')}
             </p>
           )}
 
           <div className="flex justify-end gap-3 mt-6">
             <Button variant="ghost" onClick={() => setShowConfirmModal(false)}>
-              Keep Playing
+              {t('runner.keepPlaying')}
             </Button>
             <Button variant="primary" onClick={submitQuiz} loading={submitting}>
-              Yes, Submit
+              {t('runner.yesSubmit')}
             </Button>
           </div>
         </div>

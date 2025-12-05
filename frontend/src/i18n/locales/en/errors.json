@@ -1,0 +1,28 @@
+{
+    "network": {
+        "offline": "You are currently offline",
+        "connectionLost": "Connection lost. Please check your internet connection.",
+        "serverError": "Server error. Please try again later."
+    },
+    "quiz": {
+        "notFound": "Quiz not found",
+        "loadFailed": "Failed to load quiz",
+        "submitFailed": "Failed to submit quiz. Please try again."
+    },
+    "attempt": {
+        "notFound": "Attempt not found",
+        "notYours": "This is not your attempt",
+        "alreadySubmitted": "Quiz already submitted",
+        "loadFailed": "Failed to load attempt"
+    },
+    "auth": {
+        "unauthorized": "You are not authorized to access this resource",
+        "sessionExpired": "Your session has expired. Please log in again.",
+        "invalidCredentials": "Invalid email or password"
+    },
+    "general": {
+        "somethingWrong": "Something went wrong",
+        "tryAgain": "Please try again",
+        "contactSupport": "If the problem persists, please contact support"
+    }
+}

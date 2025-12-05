@@ -1,0 +1,35 @@
+{
+    "quick": {
+        "title": "Quick Practice",
+        "description": "Practice with random questions",
+        "selectDifficulty": "Select Difficulty",
+        "selectCategory": "Select Category",
+        "allCategories": "All Categories",
+        "numberOfQuestions": "Number of Questions",
+        "start": "Start Practice"
+    },
+    "bookmarked": {
+        "title": "Bookmarked Questions",
+        "description": "Practice questions you've bookmarked",
+        "noBookmarks": "You haven't bookmarked any questions yet.",
+        "start": "Start Practice"
+    },
+    "wrong": {
+        "title": "Wrong Questions Practice",
+        "description": "Review questions you got wrong",
+        "noWrongQuestions": "Great! You haven't gotten any questions wrong yet.",
+        "start": "Start Practice"
+    },
+    "runner": {
+        "practicing": "Practicing",
+        "bookmark": "Bookmark",
+        "unbookmark": "Remove Bookmark",
+        "showAnswer": "Show Answer",
+        "hideAnswer": "Hide Answer",
+        "next": "Next Question",
+        "finish": "Finish Practice",
+        "sessionComplete": "Practice session completed!",
+        "questionsCompleted": "Questions Completed",
+        "accuracy": "Accuracy"
+    }
+}

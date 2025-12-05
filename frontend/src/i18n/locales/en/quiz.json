@@ -1,0 +1,146 @@
+{
+    "card": {
+        "difficulty": {
+            "easy": "EASY",
+            "medium": "MEDIUM",
+            "hard": "HARD"
+        },
+        "questionsCount": "{{count}} Qs",
+        "timeLimit": "{{minutes}}m",
+        "noLimit": "No limit",
+        "viewDetails": "View Details"
+    },
+    "list": {
+        "title": "Browse Quizzes",
+        "searchPlaceholder": "Search quizzes...",
+        "allDifficulties": "All Difficulties",
+        "noQuizzes": "No quizzes found",
+        "adjustFilters": "Try adjusting your search or filters.",
+        "clearFilters": "Clear all filters",
+        "errorLoad": "Failed to load quizzes"
+    },
+    "detail": {
+        "backToQuizzes": "Back to Quizzes",
+        "description": "Description",
+        "difficulty": "Difficulty",
+        "questions": "Questions",
+        "questionsLabel": "{{count}} Questions",
+        "timeLimit": "{{minutes}} mins",
+        "noTimeLimit": "No time limit",
+        "avgScore": "Avg Score: {{score}}%",
+        "category": "Category",
+        "startQuiz": "Start Quiz",
+        "configure": "Configure Quiz",
+        "previousAttempts": "Your Previous Attempts",
+        "inProgress": "In Progress",
+        "correctAnswers": "{{correct}}/{{total}} correct",
+        "notCompleted": "Not completed",
+        "noAttempts": "You haven't taken this quiz yet.",
+        "resumeConfirm": "You have an incomplete attempt. Do you want to resume it?",
+        "errorLoad": "Failed to load quiz details"
+    },
+    "runner": {
+        "question": "Question {{current}} of {{total}}",
+        "timeRemaining": "Time Remaining",
+        "submitQuiz": "Submit Quiz",
+        "next": "Next",
+        "nextQuestion": "Next Question",
+        "previous": "Previous",
+        "lastQuestion": "Last Question",
+        "previous Question": "Previous",
+        "flagQuestion": "Flag for Review",
+        "unflagQuestion": "Unflag",
+        "pauseQuiz": "Pause Quiz",
+        "confirmSubmit": "Are you sure you want to submit? You have {{unanswered}} unanswered questions.",
+        "confirmPause": "Your progress will be saved. Resume anytime from History.",
+        "paused": "Quiz paused. You can resume from History.",
+        "progressRestored": "Progress restored!",
+        "attemptCompleted": "Attempt already completed",
+        "resumingAttempt": "Resuming your previous attempt...",
+        "quizSubmitted": "Quiz submitted successfully!",
+        "submitFailed": "Failed to submit quiz",
+        "timesUp": "Time limit reached! Submitting quiz...",
+        "noQuestions": "No questions available for this quiz.",
+        "backToDetails": "Back to Quiz Details",
+        "correct": "Correct!",
+        "incorrect": "Incorrect",
+        "correctAnswer": "Correct answer",
+        "explanation": "\ud83d\udca1 Explanation:",
+        "submitTitle": "Submit Quiz?",
+        "answeredCount": "You have answered <1>{{answered}}</1> out of <1>{{total}}</1> questions.",
+        "unansweredWarning": "You have unanswered questions. Are you sure you want to submit?",
+        "keepPlaying": "Keep Playing",
+        "yesSubmit": "Yes, Submit"
+    },
+    "result": {
+        "title": "Quiz Completed!",
+        "notFound": "Result not found",
+        "score": "Your Score",
+        "correct": "Correct",
+        "incorrect": "Incorrect",
+        "unanswered": "Unanswered",
+        "timeTaken": "Time Taken",
+        "completedOn": "Completed On",
+        "performance": {
+            "excellent": "Excellent! 🎉",
+            "good": "Good job! 👏",
+            "pass": "You passed! ✅",
+            "needsImprovement": "Keep practicing! 💪"
+        },
+        "actions": {
+            "reviewAnswers": "Review Answers",
+            "retakeQuiz": "Retake Quiz",
+            "backToQuizzes": "Back to Quizzes"
+        },
+        "scoreMessage": "You got <1>{{correct}}</1> out of <1>{{total}}</1> questions correct."
+    },
+    "review": {
+        "questionLabel": "Question {{number}}",
+        "correctAnswer": "Correct Answer",
+        "yourAnswer": "Your Answer",
+        "explanation": "Explanation"
+    },
+    "config": {
+        "title": "Quiz Configuration",
+        "numberOfQuestions": "Number of Questions",
+        "max": "Max",
+        "questionsSelected": "{{count}} Questions",
+        "fewQuestionsWarning": "This quiz has fewer than 5 questions",
+        "allQuestions": "All Questions",
+        "shuffleQuestions": "Shuffle Questions",
+        "shuffleOptions": "Shuffle Answer Options",
+        "reviewMode": "Review Mode (Instant Feedback)",
+        "reviewModeDesc": "See correct/incorrect answers immediately",
+        "start": "Start Quiz"
+    },
+    "status": {
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "paused": "Paused"
+    },
+    "history": {
+        "title": "My Quiz History",
+        "noAttempts": "You haven't taken any quizzes yet.",
+        "errorLoad": "Failed to load history"
+    },
+    "historyDetail": {
+        "backToHistory": "Back to History",
+        "attemptedOn": "Attempted on {{date}}",
+        "reviewTitle": "{{title}} Review",
+        "scoreLabel": "Score",
+        "correctCount": "{{correct}}/{{total}} correct",
+        "filterAll": "All",
+        "filterCorrect": "Correct",
+        "filterIncorrect": "Incorrect",
+        "noAnswer": "No answer selected",
+        "noQuestions": "No questions found for this filter.",
+        "bookmarked": "Question bookmarked",
+        "bookmarkFailed": "Could not bookmark",
+        "errorLoad": "Failed to load review"
+    },
+    "attemptReview": {
+        "percentage": "Percentage",
+        "correct": "Correct",
+        "incorrect": "Incorrect"
+    }
+}

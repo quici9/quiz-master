@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import attemptService from '../../services/attempt.service';
 import Card from '../../components/common/Card';
 import Loading from '../../components/common/Loading';
@@ -8,6 +9,7 @@ import { formatDate } from '../../utils/formatDate';
 import toast from 'react-hot-toast';
 
 export default function History() {
+  const { t } = useTranslation(['quiz', 'common']);
   const [attempts, setAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +24,7 @@ export default function History() {
       setAttempts(response.data.attempts || []);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to load history');
+      toast.error(t('quiz:history.errorLoad'));
     } finally {
       setLoading(false);
     }
@@ -39,7 +41,7 @@ export default function History() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-        My Quiz History
+        {t('quiz:history.title')}
       </h1>
 
       {attempts.length > 0 ? (
@@ -54,7 +56,7 @@ export default function History() {
                     <span>•</span>
                     <span className={`font-medium ${attempt.status === 'COMPLETED' ? 'text-success-600 dark:text-success-400' : 'text-yellow-600 dark:text-yellow-400'
                       }`}>
-                      {attempt.status === 'COMPLETED' ? 'Completed' : 'In Progress'}
+                      {attempt.status === 'COMPLETED' ? t('quiz:status.completed') : t('quiz:status.inProgress')}
                     </span>
                   </div>
                 </div>
@@ -62,7 +64,7 @@ export default function History() {
                 <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                   {attempt.status === 'COMPLETED' && (
                     <div className="text-right">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Score</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{t('quiz:result.score')}</p>
                       <p className={`text-xl font-bold ${attempt.score >= 70 ? 'text-success-600 dark:text-success-400' : 'text-yellow-600 dark:text-yellow-400'
                         }`}>
                         {attempt.score}%
@@ -73,11 +75,11 @@ export default function History() {
                   <div className="flex gap-2">
                     {attempt.status === 'COMPLETED' ? (
                       <Link to={`/history/${attempt.id}`}>
-                        <Button variant="secondary" size="sm">Review</Button>
+                        <Button variant="secondary" size="sm">{t('common:actions.review')}</Button>
                       </Link>
                     ) : (
                       <Link to={`/quiz/${attempt.quizId}/take?attemptId=${attempt.id}`}>
-                        <Button variant="primary" size="sm">Resume</Button>
+                        <Button variant="primary" size="sm">{t('common:actions.resume')}</Button>
                       </Link>
                     )}
                   </div>
@@ -88,9 +90,9 @@ export default function History() {
         </div>
       ) : (
         <Card className="text-center py-12 border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
-          <p className="text-gray-500 dark:text-gray-400 mb-6">You haven't taken any quizzes yet.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">{t('quiz:history.noAttempts')}</p>
           <Link to="/quizzes">
-            <Button variant="primary">Browse Quizzes</Button>
+            <Button variant="primary">{t('quiz:list.title')}</Button>
           </Link>
         </Card>
       )}

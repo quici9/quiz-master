@@ -1,0 +1,146 @@
+{
+    "card": {
+        "difficulty": {
+            "easy": "DỄ",
+            "medium": "TRUNG BÌNH",
+            "hard": "KHÓ"
+        },
+        "questionsCount": "{{count}} câu",
+        "timeLimit": "{{minutes}} phút",
+        "noLimit": "Không giới hạn",
+        "viewDetails": "Xem chi tiết"
+    },
+    "list": {
+        "title": "Duyệt đề thi",
+        "searchPlaceholder": "Tìm kiếm đề thi...",
+        "allDifficulties": "Tất cả độ khó",
+        "noQuizzes": "Không tìm thấy đề thi",
+        "adjustFilters": "Thử điều chỉnh tìm kiếm hoặc bộ lọc.",
+        "clearFilters": "Xóa tất cả bộ lọc",
+        "errorLoad": "Không thể tải danh sách đề thi"
+    },
+    "detail": {
+        "backToQuizzes": "Quay lại danh sách",
+        "description": "Mô tả",
+        "difficulty": "Độ khó",
+        "questions": "Câu hỏi",
+        "questionsLabel": "{{count}} Câu hỏi",
+        "timeLimit": "{{minutes}} phút",
+        "noTimeLimit": "Không giới hạn thời gian",
+        "avgScore": "Điểm TB: {{score}}%",
+        "category": "Danh mục",
+        "startQuiz": "Bắt đầu thi",
+        "configure": "Cấu hình đề thi",
+        "previousAttempts": "Lượt thi trước đây của bạn",
+        "inProgress": "Đang làm",
+        "correctAnswers": "{{correct}}/{{total}} đúng",
+        "notCompleted": "Chưa hoàn thành",
+        "noAttempts": "Bạn chưa làm đề thi này.",
+        "resumeConfirm": "Bạn có một lượt thi chưa hoàn thành. Bạn có muốn tiếp tục không?",
+        "errorLoad": "Không thể tải thông tin đề thi"
+    },
+    "runner": {
+        "question": "Câu {{current}} / {{total}}",
+        "timeRemaining": "Thời gian còn lại",
+        "submitQuiz": "Nộp bài",
+        "next": "Tiếp",
+        "nextQuestion": "Câu tiếp theo",
+        "previous": "Quay lại",
+        "lastQuestion": "Câu cuối",
+        "previousQuestion": "Quay lại",
+        "flagQuestion": "Đánh dấu xem lại",
+        "unflagQuestion": "Bỏ đánh dấu",
+        "pauseQuiz": "Tạm dừng",
+        "confirmSubmit": "Bạn có chắc muốn nộp bài? Bạn còn {{unanswered}} câu chưa trả lời.",
+        "confirmPause": "Tiến trình của bạn sẽ được lưu. Bạn có thể tiếp tục bất cứ lúc nào từ Lịch sử.",
+        "paused": "Đã tạm dừng. Bạn có thể tiếp tục từ Lịch sử.",
+        "progressRestored": "Đã khôi phục tiến trình!",
+        "attemptCompleted": "Lượt thi đã hoàn thành",
+        "resumingAttempt": "Đang tiếp tục lượt thi trước...",
+        "quizSubmitted": "Đã nộp bài thành công!",
+        "submitFailed": "Không thể nộp bài",
+        "timesUp": "Hết thời gian! Đang nộp bài...",
+        "noQuestions": "Không có câu hỏi nào cho đề thi này.",
+        "backToDetails": "Quay lại chi tiết",
+        "correct": "Đúng!",
+        "incorrect": "Sai",
+        "correctAnswer": "Đáp án đúng",
+        "explanation": "\ud83d\udca1 Giải thích:",
+        "submitTitle": "Nộp bài?",
+        "answeredCount": "Bạn đã trả lời <1>{{answered}}</1> trong tổng số <1>{{total}}</1> câu hỏi.",
+        "unansweredWarning": "Bạn còn câu hỏi chưa trả lời. Bạn có chắc muốn nộp bài?",
+        "keepPlaying": "Tiếp tục làm",
+        "yesSubmit": "Có, nộp bài"
+    },
+    "result": {
+        "title": "Hoàn thành bài thi!",
+        "notFound": "Không tìm thấy kết quả",
+        "score": "Điểm của bạn",
+        "correct": "Đúng",
+        "incorrect": "Sai",
+        "unanswered": "Chưa trả lời",
+        "timeTaken": "Thời gian làm bài",
+        "completedOn": "Hoàn thành vào",
+        "performance": {
+            "excellent": "Xuất sắc! 🎉",
+            "good": "Làm tốt lắm! 👏",
+            "pass": "Bạn đã đạt! ✅",
+            "needsImprovement": "Tiếp tục luyện tập! 💪"
+        },
+        "actions": {
+            "reviewAnswers": "Xem lại đáp án",
+            "retakeQuiz": "Làm lại",
+            "backToQuizzes": "Quay lại danh sách"
+        },
+        "scoreMessage": "Bạn trả lời đúng <1>{{correct}}</1> trong tổng số <1>{{total}}</1> câu hỏi."
+    },
+    "review": {
+        "questionLabel": "Câu hỏi {{number}}",
+        "correctAnswer": "Đáp án đúng",
+        "yourAnswer": "Câu trả lời của bạn",
+        "explanation": "Giải thích"
+    },
+    "config": {
+        "title": "Cấu hình đề thi",
+        "numberOfQuestions": "Số lượng câu hỏi",
+        "max": "Tối đa",
+        "questionsSelected": "{{count}} Câu hỏi",
+        "fewQuestionsWarning": "Đề thi này có ít hơn 5 câu hỏi",
+        "allQuestions": "Tất cả câu hỏi",
+        "shuffleQuestions": "Trộn câu hỏi",
+        "shuffleOptions": "Trộn đáp án",
+        "reviewMode": "Chế độ xem lại (Phản hồi ngay)",
+        "reviewModeDesc": "Xem đáp án đúng/sai ngay lập tức",
+        "start": "Bắt đầu thi"
+    },
+    "status": {
+        "inProgress": "Đang làm",
+        "completed": "Đã hoàn thành",
+        "paused": "Đã tạm dừng"
+    },
+    "history": {
+        "title": "Lịch sử làm bài",
+        "noAttempts": "Bạn chưa làm bài thi nào.",
+        "errorLoad": "Không thể tải lịch sử"
+    },
+    "historyDetail": {
+        "backToHistory": "Quay lại lịch sử",
+        "attemptedOn": "Làm bài vào {{date}}",
+        "reviewTitle": "Xem lại: {{title}}",
+        "scoreLabel": "Điểm",
+        "correctCount": "{{correct}}/{{total}} đúng",
+        "filterAll": "Tất cả",
+        "filterCorrect": "Đúng",
+        "filterIncorrect": "Sai",
+        "noAnswer": "Chưa chọn đáp án",
+        "noQuestions": "Không có câu hỏi nào cho bộ lọc này.",
+        "bookmarked": "Đã đánh dấu câu hỏi",
+        "bookmarkFailed": "Không thể đánh dấu",
+        "errorLoad": "Không thể tải bài xem lại"
+    },
+    "attemptReview": {
+        "percentage": "Phần trăm",
+        "correct": "Đúng",
+        "incorrect": "Sai"
+    }
+}

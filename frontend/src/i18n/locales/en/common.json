@@ -1,0 +1,64 @@
+{
+    "nav": {
+        "dashboard": "Dashboard",
+        "quizzes": "Quizzes",
+        "history": "History",
+        "leaderboard": "Leaderboard",
+        "admin": "Admin",
+        "profile": "Your Profile"
+    },
+    "actions": {
+        "login": "Login",
+        "logout": "Sign out",
+        "register": "Register",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "submit": "Submit",
+        "start": "Start",
+        "resume": "Resume",
+        "review": "Review",
+        "viewAll": "View All",
+        "viewDetails": "View Details",
+        "browseQuizzes": "Browse Quizzes",
+        "startQuiz": "Start a Quiz"
+    },
+    "common": {
+        "welcome": "Welcome back, {{name}}! 👋",
+        "loading": "Loading...",
+        "noData": "No data available",
+        "error": "An error occurred",
+        "success": "Success",
+        "confirm": "Are you sure?",
+        "yes": "Yes",
+        "no": "No",
+        "search": "Search",
+        "filter": "Filter",
+        "sort": "Sort",
+        "close": "Close"
+    },
+    "stats": {
+        "totalAttempts": "Total Attempts",
+        "averageScore": "Average Score",
+        "leaderboardRank": "Leaderboard Rank"
+    },
+    "difficulty": {
+        "easy": "EASY",
+        "medium": "MEDIUM",
+        "hard": "HARD"
+    },
+    "time": {
+        "minutes": "{{count}}m",
+        "seconds": "{{count}}s",
+        "noLimit": "No limit"
+    },
+    "sections": {
+        "newQuizzes": "New Quizzes",
+        "recentActivity": "Recent Activity"
+    },
+    "messages": {
+        "noQuizzes": "No quizzes available yet.",
+        "noActivity": "No recent activity."
+    }
+}

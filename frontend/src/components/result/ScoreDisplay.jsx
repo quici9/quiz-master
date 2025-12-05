@@ -1,13 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { StarIcon } from '@heroicons/react/24/solid';
 
 export default function ScoreDisplay({ score, correctAnswers, totalQuestions }) {
+  const { t } = useTranslation('quiz');
   const getGrade = (score) => {
-    if (score >= 90) return { grade: 'A', stars: 5, color: 'text-green-600 dark:text-green-400', text: 'Excellent!' };
-    if (score >= 80) return { grade: 'B', stars: 4, color: 'text-blue-600 dark:text-blue-400', text: 'Great Job!' };
-    if (score >= 70) return { grade: 'C', stars: 3, color: 'text-yellow-600 dark:text-yellow-400', text: 'Good Effort' };
-    if (score >= 60) return { grade: 'D', stars: 2, color: 'text-orange-600 dark:text-orange-400', text: 'Needs Improvement' };
-    return { grade: 'F', stars: 1, color: 'text-red-600 dark:text-red-400', text: 'Keep Practicing' };
+    if (score >= 90) return { grade: 'A', stars: 5, color: 'text-green-600 dark:text-green-400', text: t('result.performance.excellent') };
+    if (score >= 80) return { grade: 'B', stars: 4, color: 'text-blue-600 dark:text-blue-400', text: t('result.performance.good') };
+    if (score >= 70) return { grade: 'C', stars: 3, color: 'text-yellow-600 dark:text-yellow-400', text: t('result.performance.pass') };
+    if (score >= 60) return { grade: 'D', stars: 2, color: 'text-orange-600 dark:text-orange-400', text: t('result.performance.needsImprovement') };
+    return { grade: 'F', stars: 1, color: 'text-red-600 dark:text-red-400', text: t('result.performance.needsImprovement') };
   };
 
   const { grade, stars, color, text } = getGrade(score);
@@ -29,7 +31,7 @@ export default function ScoreDisplay({ score, correctAnswers, totalQuestions }) 
 
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{text}</h2>
       <p className="text-gray-500 dark:text-white/60 mb-8 text-lg">
-        You got <span className="font-bold text-gray-900 dark:text-white">{correctAnswers}</span> out of <span className="font-bold text-gray-900 dark:text-white">{totalQuestions}</span> questions correct.
+        {t('result.scoreMessage', { correct: correctAnswers, total: totalQuestions })}
       </p>
 
       <div className="w-full bg-gray-200 dark:bg-white/10 h-4 rounded-full overflow-hidden backdrop-blur-sm border border-gray-100 dark:border-white/5">

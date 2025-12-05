@@ -1,0 +1,64 @@
+{
+    "nav": {
+        "dashboard": "Tổng quan",
+        "quizzes": "Đề thi",
+        "history": "Lịch sử",
+        "leaderboard": "Bảng xếp hạng",
+        "admin": "Quản trị",
+        "profile": "Hồ sơ của bạn"
+    },
+    "actions": {
+        "login": "Đăng nhập",
+        "logout": "Đăng xuất",
+        "register": "Đăng ký",
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "delete": "Xóa",
+        "edit": "Chỉnh sửa",
+        "submit": "Nộp bài",
+        "start": "Bắt đầu",
+        "resume": "Tiếp tục",
+        "review": "Xem lại",
+        "viewAll": "Xem tất cả",
+        "viewDetails": "Xem chi tiết",
+        "browseQuizzes": "Duyệt đề thi",
+        "startQuiz": "Bắt đầu làm bài"
+    },
+    "common": {
+        "welcome": "Chào mừng trở lại, {{name}}! 👋",
+        "loading": "Đang tải...",
+        "noData": "Không có dữ liệu",
+        "error": "Đã xảy ra lỗi",
+        "success": "Thành công",
+        "confirm": "Bạn có chắc chắn?",
+        "yes": "Có",
+        "no": "Không",
+        "search": "Tìm kiếm",
+        "filter": "Lọc",
+        "sort": "Sắp xếp",
+        "close": "Đóng"
+    },
+    "stats": {
+        "totalAttempts": "Tổng số lần thi",
+        "averageScore": "Điểm trung bình",
+        "leaderboardRank": "Xếp hạng"
+    },
+    "difficulty": {
+        "easy": "DỄ",
+        "medium": "TRUNG BÌNH",
+        "hard": "KHÓ"
+    },
+    "time": {
+        "minutes": "{{count}} phút",
+        "seconds": "{{count}} giây",
+        "noLimit": "Không giới hạn"
+    },
+    "sections": {
+        "newQuizzes": "Đề thi mới",
+        "recentActivity": "Hoạt động gần đây"
+    },
+    "messages": {
+        "noQuizzes": "Chưa có đề thi nào.",
+        "noActivity": "Chưa có hoạt động gần đây."
+    }
+}
