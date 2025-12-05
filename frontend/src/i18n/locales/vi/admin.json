@@ -1,6 +1,12 @@
 {
     "dashboard": {
         "title": "Bảng điều khiển quản trị",
+        "subtitle": "Quản lý hệ thống trắc nghiệm của bạn",
+        "links": {
+            "uploadDesc": "Nhập đề thi mới từ file Word (.docx)",
+            "manageDesc": "Xem, sửa hoặc xóa đề thi hiện có",
+            "analyticsDesc": "Xem thống kê sử dụng hệ thống (Sắp ra mắt)"
+        },
         "stats": {
             "totalQuizzes": "Tổng số đề thi",
             "totalUsers": "Tổng số người dùng",
@@ -9,23 +15,67 @@
         }
     },
     "upload": {
-        "title": "Tải lên đề thi",
+        "title": "Tải lên đề thi mới",
         "instructions": "Tải lên đề thi từ file DOCX",
-        "fileFormat": "Định dạng file",
-        "formatRequirements": "Yêu cầu",
-        "dragDrop": "Kéo và thả file .docx vào đây, hoặc nhấp để chọn",
-        "uploading": "Đang tải lên...",
-        "processing": "Đang xử lý đề thi...",
-        "success": "Tải lên đề thi thành công!",
+        "form": {
+            "titleLabel": "Tiêu đề đề thi",
+            "titlePlaceholder": "VD: Toán cao cấp A1",
+            "descLabel": "Mô tả",
+            "descPlaceholder": "Mô tả ngắn gọn về đề thi...",
+            "categoryLabel": "Danh mục",
+            "selectCategory": "Chọn danh mục"
+        },
+        "dragDrop": {
+            "main": "Tải lên tài liệu Word",
+            "drop": "Thả file vào đây",
+            "hint": "Kéo thả hoặc nhấp để tải lên",
+            "support": "Định dạng hỗ trợ: .docx (Tối đa 10MB)",
+            "fileSelected": "{{filename}}"
+        },
+        "buttons": {
+            "cancel": "Hủy",
+            "upload": "Tải lên & Xử lý",
+            "uploading": "Đang tải...",
+            "processing": "Đang xử lý...",
+            "another": "Tải file khác",
+            "goToQuizzes": "Đến danh sách đề thi"
+        },
+        "processing": {
+            "title": "Đang xử lý đề thi...",
+            "message": "Vui lòng đợi trong khi hệ thống xử lý",
+            "hint": "Quá trình này có thể mất vài phút tùy vào dung lượng file",
+            "status": {
+                "parsing": "Đang đọc tài liệu...",
+                "questions": "Đang xử lý câu hỏi..."
+            }
+        },
+        "success": {
+            "title": "Tải lên thành công!",
+            "totalParsed": "Đã đọc",
+            "successCount": "Thành công",
+            "failedCount": "Thất bại",
+            "issues": "Vấn đề nhập liệu ({{count}})"
+        },
+        "requirements": {
+            "title": "Yêu cầu định dạng:",
+            "format": "Chỉ sử dụng định dạng .docx.",
+            "question": "Định dạng câu hỏi:",
+            "options": "Định dạng đáp án:",
+            "answer": "Định dạng đáp án đúng:"
+        },
         "errors": {
             "noFile": "Vui lòng chọn file",
             "invalidFormat": "Chỉ hỗ trợ file .docx",
             "fileTooLarge": "Kích thước file vượt quá 10MB",
-            "uploadFailed": "Tải lên thất bại. Vui lòng thử lại."
+            "uploadFailed": "Tải lên thất bại",
+            "fillRequired": "Vui lòng điền đầy đủ thông tin",
+            "processingFailed": "Xử lý thất bại"
         }
     },
     "manage": {
         "title": "Quản lý đề thi",
+        "uploadNew": "Tải lên đề thi mới",
+        "emptyState": "Chưa có đề thi nào. Hãy tải lên ngay!",
         "table": {
             "title": "Tiêu đề",
             "category": "Danh mục",
@@ -40,12 +90,21 @@
             "view": "Xem",
             "analytics": "Thống kê"
         },
-        "confirmDelete": "Bạn có chắc chắn muốn xóa đề thi này? Hành động này không thể hoàn tác.",
+        "modal": {
+            "deleteTitle": "Xóa đề thi",
+            "confirmMessage": "Bạn có chắc chắn muốn xóa \"<1>{{title}}</1>\"?",
+            "warningMessage": "Cảnh báo: Hành động này không thể hoàn tác. Tất cả câu hỏi, đáp án và lượt thi liên quan sẽ bị xóa vĩnh viễn.",
+            "cancel": "Hủy",
+            "confirm": "Xóa đề thi"
+        },
         "deleteSuccess": "Xóa đề thi thành công",
-        "deleteFailed": "Xóa đề thi thất bại"
+        "deleteFailed": "Xóa đề thi thất bại",
+        "loadFailed": "Không thể tải danh sách đề thi"
     },
     "edit": {
         "title": "Chỉnh sửa đề thi",
+        "back": "Quay lại danh sách",
+        "comingSoon": "Tính năng chỉnh sửa đang được phát triển. Hiện tại, vui lòng xóa và tải lại đề thi nếu cần thay đổi.",
         "quizTitle": "Tiêu đề đề thi",
         "description": "Mô tả",
         "category": "Danh mục",
@@ -58,6 +117,8 @@
     },
     "analytics": {
         "title": "Thống kê đề thi",
+        "back": "Quay lại danh sách",
+        "comingSoon": "Tính năng thống kê chi tiết đang được phát triển.",
         "attempts": "Tổng lượt thi",
         "averageScore": "Điểm trung bình",
         "completionRate": "Tỷ lệ hoàn thành",

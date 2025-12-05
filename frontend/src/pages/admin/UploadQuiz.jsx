@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import adminService from '../../services/admin.service';
 import jobService from '../../services/job.service';
 import Card from '../../components/common/Card';
@@ -7,9 +8,10 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import toast from 'react-hot-toast';
 import { DocumentTextIcon, CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
-import api from '../../services/api'; // Direct api access for categories if needed, or create categoryService
+import api from '../../services/api';
 
 export default function UploadQuiz() {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [formData, setFormData] = useState({
@@ -38,7 +40,7 @@ export default function UploadQuiz() {
         setCategories(res.data);
       } catch (err) {
         console.error('Failed to fetch categories', err);
-        toast.error('Failed to load categories');
+        toast.error(t('upload.errors.uploadFailed')); // Reuse or add generic load error
       }
     };
     fetchCategories();
@@ -59,13 +61,13 @@ export default function UploadQuiz() {
     if (!selectedFile) return;
 
     if (!selectedFile.name.endsWith('.docx')) {
-      setError('Only .docx files are supported');
+      setError(t('upload.errors.invalidFormat'));
       setFile(null);
       return;
     }
 
     if (selectedFile.size > 10 * 1024 * 1024) {
-      setError('File size exceeds 10MB');
+      setError(t('upload.errors.fileTooLarge'));
       setFile(null);
       return;
     }
@@ -94,7 +96,7 @@ export default function UploadQuiz() {
     e.preventDefault();
 
     if (!formData.title || !formData.categoryId || !file) {
-      setError('Please fill in all required fields');
+      setError(t('upload.errors.fillRequired'));
       return;
     }
 
@@ -128,28 +130,28 @@ export default function UploadQuiz() {
         throw new Error('No job ID returned from server');
       }
 
-      toast.success('File uploaded! Processing...');
+      toast.success(t('upload.buttons.processing'));
 
       // Start processing state
       setProcessing(true);
-      setProcessingStatus('Parsing document...');
+      setProcessingStatus(t('upload.processing.status.parsing'));
 
       // Poll job status
       const stopPolling = await jobService.pollJobStatus(jobId, ({ state, result, error }) => {
         console.log('Job update:', state, result, error);
 
         if (state === 'active' || state === 'waiting') {
-          setProcessingStatus('Processing questions...');
+          setProcessingStatus(t('upload.processing.status.questions'));
         } else if (state === 'completed') {
           setProcessing(false);
           setProcessingStatus('');
           setResult(result?.stats || result || {});
-          toast.success('Quiz created successfully!');
+          toast.success(t('upload.success.title'));
         } else if (state === 'failed') {
           setProcessing(false);
           setProcessingStatus('');
-          setError(error || 'Processing failed');
-          toast.error('Failed to process quiz');
+          setError(error || t('upload.errors.processingFailed'));
+          toast.error(t('upload.errors.processingFailed'));
         } else if (state === 'error') {
           setProcessing(false);
           setProcessingStatus('');
@@ -162,11 +164,11 @@ export default function UploadQuiz() {
 
     } catch (err) {
       console.error('Upload failed:', err);
-      setError(err.response?.data?.error?.message || err.message || 'Failed to upload quiz');
+      setError(err.response?.data?.error?.message || err.message || t('upload.errors.uploadFailed'));
       setUploading(false);
       setProcessing(false);
       setUploadProgress(0);
-      toast.error('Upload failed');
+      toast.error(t('upload.errors.uploadFailed'));
     }
   };
 
@@ -177,14 +179,14 @@ export default function UploadQuiz() {
         <div className="w-20 h-20 bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400 rounded-full flex items-center justify-center mx-auto mb-6 border border-primary-200 dark:border-primary-500/30 shadow-lg shadow-primary-500/10 animate-pulse">
           <ClockIcon className="w-10 h-10" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Processing Quiz...</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-6">{processingStatus || 'Please wait while we process your quiz'}</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{t('upload.processing.title')}</h2>
+        <p className="text-gray-500 dark:text-gray-400 mb-6">{processingStatus || t('upload.processing.message')}</p>
 
         <div className="max-w-md mx-auto">
           <div className="w-full bg-gray-200 dark:bg-white/10 rounded-full h-2 overflow-hidden mb-4">
             <div className="bg-primary-500 h-2 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]" style={{ width: '100%' }} />
           </div>
-          <p className="text-xs text-gray-500">This may take a few moments depending on file size</p>
+          <p className="text-xs text-gray-500">{t('upload.processing.hint')}</p>
         </div>
       </Card>
     );
@@ -200,19 +202,19 @@ export default function UploadQuiz() {
         <div className="w-20 h-20 bg-success-100 text-success-600 dark:bg-success-500/20 dark:text-success-400 rounded-full flex items-center justify-center mx-auto mb-6 border border-success-200 dark:border-success-500/30 shadow-lg shadow-success-500/10">
           <CheckCircleIcon className="w-10 h-10" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Upload Successful!</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{t('upload.success.title')}</h2>
 
         <div className="grid grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
           <div className="bg-gray-100 dark:bg-white/5 p-4 rounded-xl">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Total Parsed</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">{t('upload.success.totalParsed')}</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{result.totalParsed || 0}</p>
           </div>
           <div className="bg-success-100 dark:bg-success-500/10 p-4 rounded-xl border border-success-200 dark:border-success-500/20">
-            <p className="text-success-600 dark:text-success-400 text-sm">Success</p>
+            <p className="text-success-600 dark:text-success-400 text-sm">{t('upload.success.successCount')}</p>
             <p className="text-2xl font-bold text-success-600 dark:text-success-400">{result.questionsCreated || 0}</p>
           </div>
           <div className={`p-4 rounded-xl border ${hasErrors ? 'bg-danger-50 border-danger-200 dark:bg-danger-500/10 dark:border-danger-500/20' : 'bg-gray-100 border-gray-200 dark:bg-white/5 dark:border-white/10'}`}>
-            <p className={`${hasErrors ? 'text-danger-600 dark:text-danger-400' : 'text-gray-500 dark:text-gray-400'} text-sm`}>Failed</p>
+            <p className={`${hasErrors ? 'text-danger-600 dark:text-danger-400' : 'text-gray-500 dark:text-gray-400'} text-sm`}>{t('upload.success.failedCount')}</p>
             <p className={`text-2xl font-bold ${hasErrors ? 'text-danger-600 dark:text-danger-400' : 'text-gray-900 dark:text-white'}`}>
               {(result.totalParsed || 0) - (result.questionsCreated || 0)}
             </p>
@@ -222,7 +224,7 @@ export default function UploadQuiz() {
         {hasErrors && (
           <div className="mb-8 text-left bg-danger-50 border border-danger-200 dark:bg-danger-500/5 dark:border-danger-500/20 rounded-xl p-6 max-w-lg mx-auto">
             <h3 className="text-danger-600 dark:text-danger-400 font-bold mb-3 flex items-center gap-2">
-              <span>⚠️</span> Import Issues ({result.errors.length})
+              <span>⚠️</span> {t('upload.success.issues', { count: result.errors.length })}
             </h3>
             <div className="max-h-60 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
               {result.errors.slice(0, 100).map((err, idx) => (
@@ -246,13 +248,13 @@ export default function UploadQuiz() {
             onClick={() => setResult(null)}
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
           >
-            Upload Another
+            {t('upload.buttons.another')}
           </button>
           <button
             onClick={() => navigate('/admin/quizzes')}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
-            Go to Quizzes
+            {t('upload.buttons.goToQuizzes')}
           </button>
         </div>
       </Card>
@@ -262,31 +264,31 @@ export default function UploadQuiz() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-8">
-        Upload New Quiz
+        {t('upload.title')}
       </h1>
 
       <Card className="border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
         <form onSubmit={handleUpload} className="space-y-6">
           <Input
-            label="Quiz Title"
+            label={t('upload.form.titleLabel')}
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="e.g. Advanced React Patterns"
+            placeholder={t('upload.form.titlePlaceholder')}
             required
             className="text-gray-900 dark:text-white"
           />
 
           <Input
-            label="Description"
+            label={t('upload.form.descLabel')}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            placeholder="Brief description of the quiz..."
+            placeholder={t('upload.form.descPlaceholder')}
             className="text-gray-900 dark:text-white"
           />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
-              Category <span className="text-danger-500 dark:text-danger-400">*</span>
+              {t('upload.form.categoryLabel')} <span className="text-danger-500 dark:text-danger-400">*</span>
             </label>
             <select
               value={formData.categoryId}
@@ -294,7 +296,7 @@ export default function UploadQuiz() {
               className="input w-full bg-white dark:bg-white/5 border-gray-300 dark:border-white/10 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-primary-500"
               required
             >
-              <option value="" className="text-gray-500">Select a category</option>
+              <option value="" className="text-gray-500">{t('upload.form.selectCategory')}</option>
               {categories.map(cat => (
                 <option key={cat.id} value={cat.id} className="text-gray-900 dark:text-white dark:bg-slate-800">{cat.name}</option>
               ))}
@@ -323,13 +325,13 @@ export default function UploadQuiz() {
               </div>
               <span className={`font-medium text-lg block mb-2 transition-colors
                 ${isDragging ? 'text-primary-600 dark:text-primary-300' : 'text-primary-600 dark:text-primary-400 group-hover:text-primary-500 dark:group-hover:text-primary-300'}`}>
-                {isDragging ? 'Drop file here' : 'Upload Word Document'}
+                {isDragging ? t('upload.dragDrop.drop') : t('upload.dragDrop.main')}
               </span>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                {file ? <span className="text-gray-900 dark:text-white font-medium">{file.name}</span> : 'Drag and drop or click to upload'}
+                {file ? <span className="text-gray-900 dark:text-white font-medium">{file.name}</span> : t('upload.dragDrop.hint')}
               </p>
               <p className="text-xs text-gray-500">
-                Supported format: .docx (Max 10MB)
+                {t('upload.dragDrop.support')}
               </p>
             </label>
           </div>
@@ -347,10 +349,10 @@ export default function UploadQuiz() {
 
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="ghost" onClick={() => navigate('/admin')} disabled={uploading || processing}>
-              Cancel
+              {t('upload.buttons.cancel')}
             </Button>
             <Button type="submit" disabled={uploading || processing} className="min-w-[140px]">
-              {uploading ? 'Uploading...' : processing ? 'Processing...' : 'Upload & Parse'}
+              {uploading ? t('upload.buttons.uploading') : processing ? t('upload.buttons.processing') : t('upload.buttons.upload')}
             </Button>
           </div>
         </form>
@@ -358,13 +360,13 @@ export default function UploadQuiz() {
 
       <div className="mt-8 bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-500/10 dark:border-blue-500/20 p-6 rounded-xl border text-sm dark:text-blue-200">
         <h4 className="font-bold mb-3 text-blue-900 dark:text-blue-100 flex items-center gap-2">
-          <span>ℹ️</span> Format Requirements:
+          <span>ℹ️</span> {t('upload.requirements.title')}
         </h4>
         <ul className="list-disc pl-5 space-y-2 text-blue-800/80 dark:text-blue-200/80">
-          <li>Use <strong className="text-gray-900 dark:text-white">.docx</strong> format only.</li>
-          <li>Question format: <code className="bg-white dark:bg-black/20 px-1.5 py-0.5 rounded text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-transparent">Câu 1. [Question Text]</code></li>
-          <li>Options format: <code className="bg-white dark:bg-black/20 px-1.5 py-0.5 rounded text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-transparent">A. [Option Text]</code></li>
-          <li>Correct answer format: <code className="bg-white dark:bg-black/20 px-1.5 py-0.5 rounded text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-transparent">Đáp án: A</code> (at the end of question or block)</li>
+          <li>{t('upload.requirements.format')}</li>
+          <li>{t('upload.requirements.question')} <code className="bg-white dark:bg-black/20 px-1.5 py-0.5 rounded text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-transparent">Câu 1. [Question Text]</code></li>
+          <li>{t('upload.requirements.options')} <code className="bg-white dark:bg-black/20 px-1.5 py-0.5 rounded text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-transparent">A. [Option Text]</code></li>
+          <li>{t('upload.requirements.answer')} <code className="bg-white dark:bg-black/20 px-1.5 py-0.5 rounded text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-transparent">Đáp án: A</code> (at the end of question or block)</li>
         </ul>
       </div>
     </div>

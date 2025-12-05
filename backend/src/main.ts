@@ -21,8 +21,13 @@ async function bootstrap() {
   app.use(compression());
 
   // CORS
+  const corsOrigin = configService.get('CORS_ORIGIN');
+  const origin = corsOrigin
+    ? corsOrigin.split(',').map(url => url.trim())
+    : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'];
+
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN') || 'http://localhost:3000',
+    origin,
     credentials: true,
   });
 

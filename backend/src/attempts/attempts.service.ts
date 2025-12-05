@@ -50,25 +50,36 @@ export class AttemptsService {
       questionCount: config?.questionCount ?? null,
       shuffleQuestions: config?.shuffleQuestions ?? true,
       shuffleOptions: config?.shuffleOptions ?? false,
+      reviewMode: config?.reviewMode ?? false,
     };
 
     // Determine questions based on config
-    // Note: We don't actually fetch questions here for storage, just count
-    // But for Phase 2 we need to store selected questions if subset
     let selectedQuestionsCount = quiz.questions.length;
     let selectedQuestionIds: string[] = [];
 
-    if (finalConfig.questionCount && finalConfig.questionCount < quiz.questions.length) {
-      selectedQuestionsCount = finalConfig.questionCount;
-      // We need to select random IDs here to persist which questions were chosen
-      // This requires fetching IDs from QuestionsService (or here)
-      // For now, let's assume QuestionsService handles the selection logic
-      // But we need to store it in the attempt.
-      // Let's use a helper to get IDs
-      const allQuestionIds = quiz.questions.map(q => q.id);
-      selectedQuestionIds = this.selectRandom(allQuestionIds, selectedQuestionsCount);
+    // Get all question IDs in original order
+    const allQuestionIds = quiz.questions.map(q => q.id);
+
+    // Apply shuffle if enabled
+    if (finalConfig.shuffleQuestions) {
+      // Shuffle all questions
+      const shuffledIds = this.selectRandom(allQuestionIds, allQuestionIds.length);
+
+      // Then select subset if needed
+      if (finalConfig.questionCount && finalConfig.questionCount < shuffledIds.length) {
+        selectedQuestionIds = shuffledIds.slice(0, finalConfig.questionCount);
+        selectedQuestionsCount = finalConfig.questionCount;
+      } else {
+        selectedQuestionIds = shuffledIds;
+      }
     } else {
-      selectedQuestionIds = quiz.questions.map(q => q.id);
+      // Keep original order, just select subset if needed
+      if (finalConfig.questionCount && finalConfig.questionCount < allQuestionIds.length) {
+        selectedQuestionIds = allQuestionIds.slice(0, finalConfig.questionCount);
+        selectedQuestionsCount = finalConfig.questionCount;
+      } else {
+        selectedQuestionIds = allQuestionIds;
+      }
     }
 
     // Create new attempt
@@ -277,10 +288,13 @@ export class AttemptsService {
           },
         },
         answers: {
-          select: {
-            questionId: true,
-            selectedOptionId: true,
-          },
+          include: { // Changed to include to get details for feedback
+            question: {
+              include: {
+                options: true
+              }
+            }
+          }
         },
       },
     });
@@ -301,18 +315,39 @@ export class AttemptsService {
     // Calculate time elapsed
     const timeElapsed = attempt.timeSpent || 0;
 
+    // Construct feedback history if in Review Mode
+    const feedbackHistory = {};
+    const config = attempt.configSnapshot as any;
+
+    if (config?.reviewMode) {
+      attempt.answers.forEach(answer => {
+        const correctOption = answer.question.options.find(o => o.isCorrect);
+        feedbackHistory[answer.questionId] = {
+          isCorrect: answer.isCorrect,
+          explanation: correctOption?.explanation,
+          correctOption: correctOption ? {
+            id: correctOption.id,
+            label: correctOption.label,
+            text: correctOption.text,
+          } : null,
+        };
+      });
+    }
+
     return {
       id: attempt.id,
       quizId: attempt.quizId,
       status: attempt.status,
       quiz: attempt.quiz,
       answers: answersMap,
+      feedbackHistory, // Return the feedback map
       timeElapsed,
       correctAnswers: attempt.correctAnswers,
       totalQuestions: attempt.totalQuestions,
       score: attempt.score,
       startedAt: attempt.startedAt,
       completedAt: attempt.completedAt,
+      configSnapshot: attempt.configSnapshot,
     };
   }
 

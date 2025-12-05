@@ -1,28 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import { CloudArrowUpIcon, DocumentDuplicateIcon, ChartPieIcon } from '@heroicons/react/24/outline';
 
 export default function AdminDashboard() {
+  const { t } = useTranslation('admin');
   const adminLinks = [
     {
-      title: 'Upload Quiz',
-      description: 'Import new quizzes from Word documents (.docx)',
+      title: t('upload.title'),
+      description: t('dashboard.links.uploadDesc'),
       icon: CloudArrowUpIcon,
       to: '/admin/upload',
       color: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/30',
     },
     {
-      title: 'Manage Quizzes',
-      description: 'View, edit, or delete existing quizzes',
+      title: t('manage.title'),
+      description: t('dashboard.links.manageDesc'),
       icon: DocumentDuplicateIcon,
       to: '/admin/quizzes',
       color: 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/20 dark:text-purple-400 dark:border-purple-500/30',
     },
     {
-      title: 'Analytics',
-      description: 'View system-wide usage statistics (Coming Soon)',
+      title: t('analytics.title'),
+      description: t('dashboard.links.analyticsDesc'),
       icon: ChartPieIcon,
       to: '/admin/quizzes', // Redirect to manage for now
       color: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30',
@@ -33,9 +35,9 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-          Admin Dashboard
+          {t('dashboard.title')}
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-2">Manage your quiz system</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -1,6 +1,12 @@
 {
     "dashboard": {
         "title": "Admin Dashboard",
+        "subtitle": "Manage your quiz system",
+        "links": {
+            "uploadDesc": "Import new quizzes from Word documents (.docx)",
+            "manageDesc": "View, edit, or delete existing quizzes",
+            "analyticsDesc": "View system-wide usage statistics (Coming Soon)"
+        },
         "stats": {
             "totalQuizzes": "Total Quizzes",
             "totalUsers": "Total Users",
@@ -9,29 +15,73 @@
         }
     },
     "upload": {
-        "title": "Upload Quiz",
+        "title": "Upload New Quiz",
         "instructions": "Upload Quiz from DOCX File",
-        "fileFormat": "File Format",
-        "formatRequirements": "Requirements",
-        "dragDrop": "Drag and drop a .docx file here, or click to select",
-        "uploading": "Uploading...",
-        "processing": "Processing quiz...",
-        "success": "Quiz uploaded successfully!",
+        "form": {
+            "titleLabel": "Quiz Title",
+            "titlePlaceholder": "e.g. Advanced React Patterns",
+            "descLabel": "Description",
+            "descPlaceholder": "Brief description of the quiz...",
+            "categoryLabel": "Category",
+            "selectCategory": "Select a category"
+        },
+        "dragDrop": {
+            "main": "Upload Word Document",
+            "drop": "Drop file here",
+            "hint": "Drag and drop or click to upload",
+            "support": "Supported format: .docx (Max 10MB)",
+            "fileSelected": "{{filename}}"
+        },
+        "buttons": {
+            "cancel": "Cancel",
+            "upload": "Upload & Parse",
+            "uploading": "Uploading...",
+            "processing": "Processing...",
+            "another": "Upload Another",
+            "goToQuizzes": "Go to Quizzes"
+        },
+        "processing": {
+            "title": "Processing Quiz...",
+            "message": "Please wait while we process your quiz",
+            "hint": "This may take a few moments depending on file size",
+            "status": {
+                "parsing": "Parsing document...",
+                "questions": "Processing questions..."
+            }
+        },
+        "success": {
+            "title": "Upload Successful!",
+            "totalParsed": "Total Parsed",
+            "successCount": "Success",
+            "failedCount": "Failed",
+            "issues": "Import Issues ({{count}})"
+        },
+        "requirements": {
+            "title": "Format Requirements:",
+            "format": "Use .docx format only.",
+            "question": "Question format:",
+            "options": "Options format:",
+            "answer": "Correct answer format:"
+        },
         "errors": {
             "noFile": "Please select a file",
             "invalidFormat": "Only .docx files are supported",
             "fileTooLarge": "File size exceeds 10MB",
-            "uploadFailed": "Upload failed. Please try again."
+            "uploadFailed": "Upload failed",
+            "fillRequired": "Please fill in all required fields",
+            "processingFailed": "Processing failed"
         }
     },
     "manage": {
         "title": "Manage Quizzes",
+        "uploadNew": "Upload New Quiz",
+        "emptyState": "No quizzes found. Upload one to get started!",
         "table": {
             "title": "Title",
             "category": "Category",
             "difficulty": "Difficulty",
             "questions": "Questions",
-            "created": "Created",
+            "created": "Created At",
             "actions": "Actions"
         },
         "actions": {
@@ -40,12 +90,21 @@
             "view": "View",
             "analytics": "Analytics"
         },
-        "confirmDelete": "Are you sure you want to delete this quiz? This action cannot be undone.",
+        "modal": {
+            "deleteTitle": "Delete Quiz",
+            "confirmMessage": "Are you sure you want to delete \"<1>{{title}}</1>\"?",
+            "warningMessage": "Warning: This action cannot be undone. All questions, options, and user attempts associated with this quiz will be permanently deleted.",
+            "cancel": "Cancel",
+            "confirm": "Delete Quiz"
+        },
         "deleteSuccess": "Quiz deleted successfully",
-        "deleteFailed": "Failed to delete quiz"
+        "deleteFailed": "Failed to delete quiz",
+        "loadFailed": "Failed to load quizzes"
     },
     "edit": {
         "title": "Edit Quiz",
+        "back": "Back to Quizzes",
+        "comingSoon": "Quiz Editor is coming soon. For now, please delete and re-upload the quiz if you need to make changes.",
         "quizTitle": "Quiz Title",
         "description": "Description",
         "category": "Category",
@@ -58,6 +117,8 @@
     },
     "analytics": {
         "title": "Quiz Analytics",
+        "back": "Back to Quizzes",
+        "comingSoon": "Detailed analytics for this quiz are coming soon.",
         "attempts": "Total Attempts",
         "averageScore": "Average Score",
         "completionRate": "Completion Rate",

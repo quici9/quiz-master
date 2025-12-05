@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import attemptService from '../../services/attempt.service';
 import questionService from '../../services/question.service';
 import quizService from '../../services/quiz.service';
@@ -48,7 +48,7 @@ export default function QuizRunner() {
   const { time, start: startTimer, stop: stopTimer, setTime } = useTimer(0, quiz?.timeLimit, () => handleAutoSubmit());
 
   // Auto-save integration
-  const quizData = { currentQuestionIndex: currentIndex, answers, timeSpent: time };
+  const quizData = { currentQuestionIndex: currentIndex, answers, timeSpent: time, feedbackHistory };
   const { isSaving, lastSaved, error: saveError, loadSavedProgress, clearSavedProgress } = useAutoSave(attemptId, quizData);
   const [showRecovery, setShowRecovery] = useState(false);
   const [recoveredData, setRecoveredData] = useState(null);
@@ -59,7 +59,8 @@ export default function QuizRunner() {
       if (attemptId && !loading && !submitting) {
         const saved = await loadSavedProgress();
         if (saved && saved.timestamp > Date.now() - 24 * 60 * 60 * 1000) { // Only recover if less than 24h old
-          // Simple check: if saved answers count > current answers count, or just offer it
+
+          // Case 1: More answers locally than on server -> Offer recovery
           if (Object.keys(saved.answers || {}).length > Object.keys(answers).length) {
             setRecoveredData(saved);
             setShowRecovery(true);
@@ -76,6 +77,7 @@ export default function QuizRunner() {
       if (recoveredData.answers) setAnswers(recoveredData.answers);
       if (recoveredData.currentQuestionIndex) setCurrentIndex(recoveredData.currentQuestionIndex);
       if (recoveredData.timeSpent) setTime(recoveredData.timeSpent);
+      if (recoveredData.feedbackHistory) setFeedbackHistory(recoveredData.feedbackHistory);
       toast.success(t('runner.progressRestored'));
     }
     setShowRecovery(false);
@@ -143,6 +145,9 @@ export default function QuizRunner() {
         // Restore review mode
         if (reviewModeFromConfig) {
           setReviewMode(true);
+          if (attemptRes.data.feedbackHistory) {
+            setFeedbackHistory(attemptRes.data.feedbackHistory);
+          }
         }
 
         // Load questions for this specific attempt with shuffle config
@@ -185,6 +190,9 @@ export default function QuizRunner() {
           // Restore review mode
           if (reviewModeFromConfig) {
             setReviewMode(true);
+            if (attemptDetailRes.data.feedbackHistory) {
+              setFeedbackHistory(attemptDetailRes.data.feedbackHistory);
+            }
           }
 
           const questionsRes = await questionService.getQuestionsByAttempt(newAttemptId, { shuffleOptions });
@@ -292,68 +300,13 @@ export default function QuizRunner() {
     }
   };
 
-  const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
-      const nextIndex = currentIndex + 1;
-      setCurrentIndex(nextIndex);
-
-      // In Review Mode, restore feedback if question was already answered
-      if (reviewMode && questions[nextIndex]) {
-        const nextQuestionId = questions[nextIndex].id;
-        const previousFeedback = feedbackHistory[nextQuestionId];
-
-        if (previousFeedback) {
-          setCurrentFeedback(previousFeedback);
-          setShowFeedback(true);
-        } else {
-          setShowFeedback(false);
-          setCurrentFeedback(null);
-        }
-      } else {
-        setShowFeedback(false);
-        setCurrentFeedback(null);
-      }
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      const prevIndex = currentIndex - 1;
-      setCurrentIndex(prevIndex);
-
-      // In Review Mode, restore feedback if question was already answered
-      if (reviewMode && questions[prevIndex]) {
-        const prevQuestionId = questions[prevIndex].id;
-        const previousFeedback = feedbackHistory[prevQuestionId];
-
-        if (previousFeedback) {
-          setCurrentFeedback(previousFeedback);
-          setShowFeedback(true);
-        } else {
-          setShowFeedback(false);
-          setCurrentFeedback(null);
-        }
-      } else {
-        setShowFeedback(false);
-        setCurrentFeedback(null);
-      }
-    } else {
-      setShowFeedback(false);
-      setCurrentFeedback(null);
-    }
-  };
-
-
-  const handleJumpToQuestion = (index) => {
-    setCurrentIndex(index);
-
-    // In Review Mode, restore feedback if question was already answered
-    if (reviewMode && questions[index]) {
-      const targetQuestionId = questions[index].id;
-      const previousFeedback = feedbackHistory[targetQuestionId];
-
-      if (previousFeedback) {
-        setCurrentFeedback(previousFeedback);
+  // Sync feedback display with current question and history
+  useEffect(() => {
+    if (reviewMode && questions[currentIndex]) {
+      const questionId = questions[currentIndex].id;
+      const history = feedbackHistory[questionId];
+      if (history) {
+        setCurrentFeedback(history);
         setShowFeedback(true);
       } else {
         setShowFeedback(false);
@@ -363,6 +316,33 @@ export default function QuizRunner() {
       setShowFeedback(false);
       setCurrentFeedback(null);
     }
+  }, [currentIndex, feedbackHistory, reviewMode, questions]);
+
+  // Sync firstAnswerGiven with loaded answers
+  useEffect(() => {
+    if (reviewMode && Object.keys(answers).length > 0) {
+      const newFirstAnswerGiven = {};
+      Object.keys(answers).forEach(qId => {
+        newFirstAnswerGiven[qId] = true;
+      });
+      setFirstAnswerGiven(prev => ({ ...prev, ...newFirstAnswerGiven }));
+    }
+  }, [answers, reviewMode]);
+
+  const handleNext = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    }
+  };
+
+  const handleJumpToQuestion = (index) => {
+    setCurrentIndex(index);
   };
 
   const handleSubmitClick = () => {
@@ -577,7 +557,12 @@ export default function QuizRunner() {
       >
         <div className="space-y-4">
           <p className="text-gray-600 dark:text-gray-300">
-            {t('runner.answeredCount', { answered: Object.keys(answers).length, total: questions.length })}
+            <Trans
+              i18nKey="runner.answeredCount"
+              ns="quiz"
+              values={{ answered: Object.keys(answers).length, total: questions.length }}
+              components={{ 1: <strong className="font-bold text-gray-900 dark:text-white" /> }}
+            />
           </p>
 
           {Object.keys(answers).length < questions.length && (

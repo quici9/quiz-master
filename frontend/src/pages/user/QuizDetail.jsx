@@ -12,7 +12,7 @@ import { ClockIcon, QuestionMarkCircleIcon, ChartBarIcon, ArrowLeftIcon } from '
 import { formatDate } from '../../utils/formatDate';
 
 export default function QuizDetail() {
-  const { t } = useTranslation('quiz');
+  const { t } = useTranslation(['quiz', 'common']);
   const { id } = useParams();
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState(null);
@@ -147,7 +147,7 @@ export default function QuizDetail() {
                 </div>
                 <Link to={attempt.status === 'COMPLETED' ? `/history/${attempt.id}` : `/quiz/${id}/take?attemptId=${attempt.id}`}>
                   <Button variant="secondary" size="sm">
-                    {attempt.status === 'COMPLETED' ? t('common.actions.review') : t('common.actions.resume')}
+                    {attempt.status === 'COMPLETED' ? t('common:actions.review') : t('common:actions.resume')}
                   </Button>
                 </Link>
               </Card>

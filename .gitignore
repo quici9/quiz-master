@@ -27,8 +27,8 @@ redis-data/
 backend/uploads/
 uploads/
 
-# Sample data
-sample_data/
+# # Sample data
+# sample_data/
 
 # OS
 .DS_Store
