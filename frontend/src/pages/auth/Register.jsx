@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
@@ -7,6 +8,7 @@ import Card from '../../components/common/Card';
 import toast from 'react-hot-toast';
 
 export default function Register() {
+  const { t } = useTranslation('auth');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,20 +34,17 @@ export default function Register() {
     const newErrors = {};
     const { email, password, confirmPassword, fullName } = formData;
 
-    if (!fullName) newErrors.fullName = 'Full name is required';
+    if (!fullName) newErrors.fullName = t('register.errors.fullNameRequired');
 
-    if (!email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
+    if (!email) newErrors.email = t('register.errors.emailRequired');
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = t('register.errors.emailInvalid');
 
-    if (!password) newErrors.password = 'Password is required';
-    else if (password.length < 8) newErrors.password = 'Min 8 characters';
-    else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      newErrors.password = 'Must contain uppercase, lowercase, and number';
-    }
+    if (!password) newErrors.password = t('register.errors.passwordRequired');
+    else if (password.length < 6) newErrors.password = t('register.errors.passwordTooShort');
 
-    if (!confirmPassword) newErrors.confirmPassword = 'Please confirm password';
+    if (!confirmPassword) newErrors.confirmPassword = t('register.errors.confirmPasswordRequired');
     else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('register.errors.passwordMismatch');
     }
 
     return newErrors;
@@ -64,7 +63,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(formData.email, formData.password, formData.fullName);
-      toast.success('Registration successful!');
+      toast.success(t('register.success'));
       navigate('/');
     } catch (error) {
       console.error(error);
@@ -72,7 +71,7 @@ export default function Register() {
       if (message?.toLowerCase().includes('email')) {
         setErrors({ email: message });
       } else {
-        toast.error(message || 'Registration failed');
+        toast.error(message || t('register.errors.registrationFailed'));
       }
     } finally {
       setLoading(false);
@@ -83,12 +82,12 @@ export default function Register() {
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Create a new account
+          {t('register.title')}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-white/70">
-          Or{' '}
+          {t('register.subtitle')}{' '}
           <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500 dark:text-white dark:hover:text-white/80 underline decoration-primary-300 dark:decoration-white/30 hover:decoration-primary-500 dark:hover:decoration-white">
-            sign in to existing account
+            {t('register.signIn')}
           </Link>
         </p>
       </div>
@@ -97,47 +96,45 @@ export default function Register() {
         <Card>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <Input
-              label="Full Name"
+              label={t('register.fullName')}
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="John Doe"
+              placeholder={t('register.fullNamePlaceholder')}
               required
               error={errors.fullName}
             />
 
             <Input
-              label="Email address"
+              label={t('register.email')}
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="john@example.com"
+              placeholder={t('register.emailPlaceholder')}
               required
               error={errors.email}
             />
 
             <Input
-              label="Password"
+              label={t('register.password')}
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="••••••••"
+              placeholder={t('register.passwordPlaceholder')}
               required
               error={errors.password}
             />
-            <p className="text-xs text-gray-500 dark:text-white/50 mt-[-10px] mb-4">
-              Min 8 chars, 1 uppercase, 1 lowercase, 1 number
-            </p>
+
 
             <Input
-              label="Confirm Password"
+              label={t('register.confirmPassword')}
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="••••••••"
+              placeholder={t('register.confirmPasswordPlaceholder')}
               required
               error={errors.confirmPassword}
             />
@@ -149,7 +146,7 @@ export default function Register() {
                 className="w-full"
                 loading={loading}
               >
-                Register
+                {t('register.button')}
               </Button>
             </div>
           </form>

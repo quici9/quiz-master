@@ -13,7 +13,7 @@ export default function Preferences() {
         darkMode: false,
         fontSize: 'medium',
         defaultShuffle: true,
-        reviewMode: false,
+        reviewMode: true,
         showExplanations: true,
         defaultQuestionCount: null,
         defaultShuffleQuestions: true,

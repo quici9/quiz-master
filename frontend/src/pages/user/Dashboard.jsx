@@ -10,8 +10,10 @@ import Button from '../../components/common/Button';
 import toast from 'react-hot-toast';
 import { ChartBarIcon, BookOpenIcon, TrophyIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { formatRelativeTime } from '../../utils/formatDate';
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
+  const { t } = useTranslation('common');
   const { user } = useAuth();
   const [stats, setStats] = useState({
     totalAttempts: 0,
@@ -67,10 +69,10 @@ export default function Dashboard() {
     <div className="space-y-4 md:space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-          Welcome back, {user?.fullName || 'User'}! 👋
+          {t('common.welcome', { name: user?.fullName || 'User' })}
         </h1>
         <Link to="/quizzes">
-          <Button>Browse Quizzes</Button>
+          <Button>{t('actions.browseQuizzes')}</Button>
         </Link>
       </div>
 
@@ -81,7 +83,7 @@ export default function Dashboard() {
             <BookOpenIcon className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">Total Attempts</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">{t('stats.totalAttempts')}</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalAttempts}</p>
           </div>
         </Card>
@@ -91,7 +93,7 @@ export default function Dashboard() {
             <ChartBarIcon className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">Average Score</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">{t('stats.averageScore')}</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{Math.round(stats.averageScore)}%</p>
           </div>
         </Card>
@@ -101,7 +103,7 @@ export default function Dashboard() {
             <TrophyIcon className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">Leaderboard Rank</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 font-medium">{t('stats.leaderboardRank')}</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">#--</p>
           </div>
         </Card>
@@ -111,8 +113,8 @@ export default function Dashboard() {
         {/* Recent Quizzes */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">New Quizzes</h2>
-            <Link to="/quizzes" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">View All</Link>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('sections.newQuizzes')}</h2>
+            <Link to="/quizzes" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">{t('actions.viewAll')}</Link>
           </div>
           <div className="space-y-4">
             {stats.recentQuizzes.length > 0 ? (
@@ -134,14 +136,14 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <Link to={`/quizzes/${quiz.id}`}>
-                      <Button size="sm" variant="secondary">Start</Button>
+                      <Button size="sm" variant="secondary">{t('actions.start')}</Button>
                     </Link>
                   </div>
                 </Card>
               ))
             ) : (
               <Card className="text-center py-8 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
-                <p className="text-gray-500 dark:text-white/50">No quizzes available yet.</p>
+                <p className="text-gray-500 dark:text-white/50">{t('messages.noQuizzes')}</p>
               </Card>
             )}
           </div>
@@ -150,8 +152,8 @@ export default function Dashboard() {
         {/* Recent Activity */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Recent Activity</h2>
-            <Link to="/history" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">View History</Link>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('sections.recentActivity')}</h2>
+            <Link to="/history" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">{t('actions.viewAll').replace('All', 'History')}</Link>
           </div>
           <div className="space-y-4">
             {stats.recentAttempts.length > 0 ? (
@@ -171,7 +173,7 @@ export default function Dashboard() {
                     </div>
                     <Link to={attempt.status === 'COMPLETED' ? `/history/${attempt.id}` : `/quiz/${attempt.quizId}/take`}>
                       <Button size="sm" variant="ghost">
-                        {attempt.status === 'COMPLETED' ? 'Review' : 'Resume'}
+                        {attempt.status === 'COMPLETED' ? t('actions.review') : t('actions.resume')}
                       </Button>
                     </Link>
                   </div>
@@ -179,9 +181,9 @@ export default function Dashboard() {
               ))
             ) : (
               <Card className="text-center py-8 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
-                <p className="text-gray-500 dark:text-white/50">No recent activity.</p>
+                <p className="text-gray-500 dark:text-white/50">{t('messages.noActivity')}</p>
                 <Link to="/quizzes">
-                  <Button variant="ghost" className="mt-2">Start a Quiz</Button>
+                  <Button variant="ghost" className="mt-2">{t('actions.startQuiz')}</Button>
                 </Link>
               </Card>
             )}

@@ -9,8 +9,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { DarkModeToggle } from '../DarkModeToggle';
+import LanguageSwitcher from '../common/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export default function Navbar() {
+  const { t } = useTranslation('common');
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,14 +27,14 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   const navLinks = [
-    { name: 'Dashboard', path: '/' },
-    { name: 'Quizzes', path: '/quizzes' },
-    { name: 'History', path: '/history' },
-    { name: 'Leaderboard', path: '/leaderboard' },
+    { name: t('nav.dashboard'), path: '/' },
+    { name: t('nav.quizzes'), path: '/quizzes' },
+    { name: t('nav.history'), path: '/history' },
+    { name: t('nav.leaderboard'), path: '/leaderboard' },
   ];
 
   if (user?.role === 'ADMIN') {
-    navLinks.push({ name: 'Admin', path: '/admin' });
+    navLinks.push({ name: t('nav.admin'), path: '/admin' });
   }
 
   return (
@@ -70,6 +73,7 @@ export default function Navbar() {
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
+            <LanguageSwitcher />
             <DarkModeToggle />
             {user ? (
               <div className="flex items-center gap-4 pl-4 border-l border-gray-200 dark:border-white/10">
@@ -90,13 +94,13 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-100 dark:text-white/70 dark:hover:text-white px-3 py-2 rounded-lg dark:hover:bg-white/5 transition-colors">
-                  Login
+                  {t('actions.login')}
                 </Link>
                 <Link
                   to="/register"
                   className="btn btn-primary text-sm py-1.5"
                 >
-                  Register
+                  {t('actions.register')}
                 </Link>
               </div>
             )}
@@ -139,7 +143,8 @@ export default function Navbar() {
             ))}
           </div>
           <div className="pt-4 pb-4 border-t border-gray-200 dark:border-white/10 px-4">
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end gap-2 mb-4">
+              <LanguageSwitcher />
               <DarkModeToggle />
             </div>
             {user ? (
@@ -158,7 +163,7 @@ export default function Navbar() {
                   onClick={() => setIsOpen(false)}
                   className="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-100 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/5"
                 >
-                  Your Profile
+                  {t('nav.profile')}
                 </Link>
                 <button
                   onClick={() => {
@@ -167,7 +172,7 @@ export default function Navbar() {
                   }}
                   className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-danger-600 hover:bg-danger-50 dark:text-danger-300 dark:hover:bg-danger-500/10"
                 >
-                  Sign out
+                  {t('actions.logout')}
                 </button>
               </div>
             ) : (
@@ -177,14 +182,14 @@ export default function Navbar() {
                   onClick={() => setIsOpen(false)}
                   className="block w-full text-center px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-base font-medium text-gray-700 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
-                  Login
+                  {t('actions.login')}
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setIsOpen(false)}
                   className="block w-full text-center px-4 py-2 rounded-lg text-base font-medium text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-500/30"
                 >
-                  Register
+                  {t('actions.register')}
                 </Link>
               </div>
             )}
