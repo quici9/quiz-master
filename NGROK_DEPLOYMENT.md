@@ -130,6 +130,15 @@ sudo apt update
 sudo apt install -y ngrok
 ```
 
+> [!IMPORTANT]
+> **Ngrok yêu cầu tài khoản (miễn phí):**
+> 1. Đăng ký tại: https://dashboard.ngrok.com/signup
+> 2. Lấy authtoken tại: https://dashboard.ngrok.com/get-started/your-authtoken
+> 3. Cài authtoken:
+> ```bash
+> ngrok config add-authtoken YOUR_AUTH_TOKEN_HERE
+> ```
+
 ### Bước 4: Khởi Động Docker Containers
 
 ```bash
@@ -269,7 +278,25 @@ docker logs quiz-db
 docker-compose up --build -d frontend
 ```
 
-### 4. Ngrok tunnel bị disconnect
+### 4. Ngrok yêu cầu authtoken (ERR_NGROK_4018)
+
+**Error:**
+```
+ERR_NGROK_4018: Usage of ngrok requires a verified account
+```
+
+**Fix:**
+```bash
+# 1. Đăng ký: https://dashboard.ngrok.com/signup
+# 2. Lấy token: https://dashboard.ngrok.com/get-started/your-authtoken
+# 3. Cài token:
+ngrok config add-authtoken YOUR_AUTH_TOKEN
+
+# 4. Chạy lại
+ngrok http 80
+```
+
+### 5. Ngrok tunnel bị disconnect
 
 ```bash
 # Check Ngrok logs
@@ -280,7 +307,7 @@ pkill ngrok
 ngrok http 80
 ```
 
-### 5. CORS Errors trong Browser Console
+### 6. CORS Errors trong Browser Console
 
 **Nguyên nhân:** Backend chưa accept Ngrok domain
 
@@ -294,7 +321,7 @@ Rebuild backend:
 docker-compose up --build -d backend
 ```
 
-### 6. File Upload Không Hoạt Động
+### 7. File Upload Không Hoạt Động
 
 **Nguyên nhân:** Nginx default max body size = 1MB
 

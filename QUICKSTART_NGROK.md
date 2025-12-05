@@ -11,10 +11,15 @@ cd QuizMaster
 chmod +x deploy-ngrok.sh
 ./deploy-ngrok.sh
 
-# 3. Start Ngrok tunnel
+# 3. Setup Ngrok authtoken (chỉ 1 lần)
+# - Đăng ký: https://dashboard.ngrok.com/signup
+# - Lấy token: https://dashboard.ngrok.com/get-started/your-authtoken
+ngrok config add-authtoken YOUR_AUTH_TOKEN
+
+# 4. Start Ngrok tunnel
 ngrok http 80
 
-# 4. Copy URL và share
+# 5. Copy URL và share
 # Ví dụ: https://abc123.ngrok.io
 ```
 
