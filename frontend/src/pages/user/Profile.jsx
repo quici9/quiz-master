@@ -4,8 +4,10 @@ import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function Profile() {
+  const { t } = useTranslation('common');
   const { user, updateProfile } = useAuth();
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
@@ -22,9 +24,9 @@ export default function Profile() {
     setLoading(true);
     try {
       await updateProfile(formData); // This is a stub in AuthContext for now
-      toast.success('Profile updated successfully');
+      toast.success(t('profile.success'));
     } catch (error) {
-      toast.error('Failed to update profile');
+      toast.error(t('profile.error'));
     } finally {
       setLoading(false);
     }
@@ -33,7 +35,7 @@ export default function Profile() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-        My Profile
+        {t('profile.title')}
       </h1>
 
       <Card className="border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
@@ -52,14 +54,14 @@ export default function Profile() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
-            label="Full Name"
+            label={t('profile.fullName')}
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
             className="text-gray-900 dark:text-white"
           />
           <Input
-            label="Email"
+            label={t('profile.email')}
             name="email"
             value={formData.email}
             disabled
@@ -67,7 +69,7 @@ export default function Profile() {
           />
 
           <Button type="submit" loading={loading} disabled className="w-full sm:w-auto">
-            Save Changes (Coming Soon)
+            {t('profile.saveComingSoon')}
           </Button>
         </form>
       </Card>

@@ -86,7 +86,7 @@ export default function Navbar() {
                 <button
                   onClick={handleLogout}
                   className="p-2 rounded-lg text-gray-500 hover:text-danger-600 hover:bg-gray-100 dark:text-white/60 dark:hover:text-danger-300 dark:hover:bg-white/5 transition-all focus:outline-none"
-                  title="Logout"
+                  title={t('actions.logout')}
                 >
                   <ArrowRightOnRectangleIcon className="h-5 w-5" />
                 </button>

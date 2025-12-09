@@ -69,7 +69,10 @@
             "fileTooLarge": "File size exceeds 10MB",
             "uploadFailed": "Upload failed",
             "fillRequired": "Please fill in all required fields",
-            "processingFailed": "Processing failed"
+            "processingFailed": "Processing failed",
+            "checkStatusFailed": "Failed to check job status",
+            "unknown": "Unknown error",
+            "moreErrors": "...and {{count}} more errors"
         }
     },
     "manage": {
@@ -99,7 +102,8 @@
         },
         "deleteSuccess": "Quiz deleted successfully",
         "deleteFailed": "Failed to delete quiz",
-        "loadFailed": "Failed to load quizzes"
+        "loadFailed": "Failed to load quizzes",
+        "uncategorized": "Uncategorized"
     },
     "edit": {
         "title": "Edit Quiz",

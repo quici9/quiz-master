@@ -51,7 +51,7 @@ export default function Dashboard() {
       });
     } catch (error) {
       console.error(error);
-      toast.error('Failed to load dashboard data');
+      toast.error(t('common.dashboardLoadError'));
     } finally {
       setLoading(false);
     }
@@ -125,7 +125,7 @@ export default function Dashboard() {
                       <h3 className="font-semibold text-gray-900 dark:text-white">{quiz.title}</h3>
                       <div className="flex gap-2 mt-2">
                         <span className={`text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-white/70`}>
-                          {quiz.questionsCount || quiz.totalQuestions || 0} Qs
+                          {quiz.questionsCount || quiz.totalQuestions || 0} {t('common.questionsShort')}
                         </span>
                         <span className={`text-xs px-2 py-1 rounded-full 
                           ${quiz.difficulty === 'EASY' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-200' :
@@ -153,7 +153,7 @@ export default function Dashboard() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('sections.recentActivity')}</h2>
-            <Link to="/history" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">{t('actions.viewAll').replace('All', 'History')}</Link>
+            <Link to="/history" className="text-sm text-primary-600 hover:text-primary-700 dark:text-white/80 dark:hover:text-white">{t('actions.viewHistory')}</Link>
           </div>
           <div className="space-y-4">
             {stats.recentAttempts.length > 0 ? (
@@ -161,7 +161,7 @@ export default function Dashboard() {
                 <Card key={attempt.id} className="hover:shadow-lg transition-shadow bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{attempt.quiz?.title || 'Unknown Quiz'}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{attempt.quiz?.title || t('common.unknownQuiz')}</h3>
                       <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-white/60">
                         <ClockIcon className="w-4 h-4" />
                         <span>{formatRelativeTime(attempt.createdAt)}</span>

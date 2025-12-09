@@ -262,11 +262,15 @@ export default function QuizRunner() {
 
       // Show instant feedback in Review Mode
       if (reviewMode) {
-        // Use backend response which includes isCorrect and correctOption
+        // Find the correct option in the CURRENTLY displayed questions (which are shuffled)
+        // This ensures the label (A, B, C...) matches what the user sees
+        const displayedCorrectOption = question.options.find(o => o.id === response.data.correctOption?.id);
+
         const feedback = {
           isCorrect: response.data.isCorrect,
           explanation: response.data.correctOption?.explanation || question.explanation,
-          correctOption: response.data.correctOption,
+          // Use displayed option with correct label if found, otherwise fallback to backend response
+          correctOption: displayedCorrectOption || response.data.correctOption,
         };
         setCurrentFeedback(feedback);
         setShowFeedback(true);
@@ -544,6 +548,8 @@ export default function QuizRunner() {
             currentIndex={currentIndex}
             answers={answers}
             bookmarks={bookmarks}
+            reviewMode={reviewMode}
+            feedbackHistory={feedbackHistory}
             onJumpTo={handleJumpToQuestion}
             className="sticky top-24"
           />

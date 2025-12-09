@@ -21,6 +21,7 @@
         "review": "Xem lại",
         "viewAll": "Xem tất cả",
         "viewDetails": "Xem chi tiết",
+        "viewHistory": "Xem lịch sử",
         "browseQuizzes": "Duyệt đề thi",
         "startQuiz": "Bắt đầu làm bài"
     },
@@ -28,7 +29,10 @@
         "welcome": "Chào mừng trở lại, {{name}}! 👋",
         "loading": "Đang tải...",
         "noData": "Không có dữ liệu",
+        "unknownQuiz": "Không rõ đề thi",
+        "questionsShort": "Câu",
         "error": "Đã xảy ra lỗi",
+        "dashboardLoadError": "Không thể tải dữ liệu bảng điều khiển",
         "success": "Thành công",
         "confirm": "Bạn có chắc chắn?",
         "yes": "Có",
@@ -57,8 +61,42 @@
         "newQuizzes": "Đề thi mới",
         "recentActivity": "Hoạt động gần đây"
     },
+    "recovery": {
+        "title": "Tiếp tục làm bài?",
+        "message": "Chúng tôi tìm thấy tiến độ chưa được lưu từ {{date}}. Bạn có muốn khôi phục không?",
+        "discard": "Làm lại từ đầu",
+        "resume": "Tiếp tục"
+    },
     "messages": {
         "noQuizzes": "Chưa có đề thi nào.",
         "noActivity": "Chưa có hoạt động gần đây."
+    },
+    "save": {
+        "notSaved": "Chưa lưu",
+        "saving": "Đang lưu...",
+        "saved": "Đã lưu {{time}}"
+    },
+    "bookmark": {
+        "add": "Đánh dấu câu hỏi",
+        "remove": "Bỏ đánh dấu"
+    },
+    "leaderboard": {
+        "title": "Bảng xếp hạng 🏆",
+        "weekly": "Tuần",
+        "monthly": "Tháng",
+        "rank": "Hạng",
+        "user": "Người dùng",
+        "quizzesTaken": "Số bài thi",
+        "totalScore": "Tổng điểm",
+        "noData": "Không có dữ liệu cho giai đoạn này."
+    },
+    "profile": {
+        "title": "Hồ sơ của tôi",
+        "fullName": "Họ và tên",
+        "email": "Email",
+        "role": "Vai trò",
+        "success": "Cập nhật hồ sơ thành công",
+        "error": "Cập nhật hồ sơ thất bại",
+        "saveComingSoon": "Lưu thay đổi (Sắp ra mắt)"
     }
 }

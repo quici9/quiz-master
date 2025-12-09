@@ -37,7 +37,10 @@ export class QuestionsService {
         }
 
         if (shuffleOptions) {
-            questions.forEach(q => this.shuffleArray(q.options));
+            questions.forEach(q => {
+                this.shuffleArray(q.options);
+                this.relabelOptions(q.options);
+            });
         }
 
         await this.cacheService.set(cacheKey, questions, 3600 * 1000); // 1 hour
@@ -69,7 +72,10 @@ export class QuestionsService {
         }
 
         if (config.shuffleOptions) {
-            questions.forEach(q => this.shuffleArray(q.options));
+            questions.forEach(q => {
+                this.shuffleArray(q.options);
+                this.relabelOptions(q.options);
+            });
         }
 
         return questions;
@@ -115,7 +121,10 @@ export class QuestionsService {
         ).filter(q => q !== undefined);
 
         if (shuffleOptions) {
-            orderedQuestions.forEach(q => this.shuffleArray(q.options));
+            orderedQuestions.forEach(q => {
+                this.shuffleArray(q.options);
+                this.relabelOptions(q.options);
+            });
         }
 
         return orderedQuestions;
@@ -126,5 +135,11 @@ export class QuestionsService {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
         }
+    }
+
+    private relabelOptions(options: any[]) {
+        options.forEach((option, index) => {
+            option.label = String.fromCharCode(65 + index); // A, B, C, D, ...
+        });
     }
 }

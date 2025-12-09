@@ -21,6 +21,7 @@
         "review": "Review",
         "viewAll": "View All",
         "viewDetails": "View Details",
+        "viewHistory": "View History",
         "browseQuizzes": "Browse Quizzes",
         "startQuiz": "Start a Quiz"
     },
@@ -28,7 +29,10 @@
         "welcome": "Welcome back, {{name}}! 👋",
         "loading": "Loading...",
         "noData": "No data available",
+        "unknownQuiz": "Unknown Quiz",
+        "questionsShort": "Qs",
         "error": "An error occurred",
+        "dashboardLoadError": "Failed to load dashboard data",
         "success": "Success",
         "confirm": "Are you sure?",
         "yes": "Yes",
@@ -57,8 +61,42 @@
         "newQuizzes": "New Quizzes",
         "recentActivity": "Recent Activity"
     },
+    "recovery": {
+        "title": "Resume Quiz?",
+        "message": "We found unsaved progress from {{date}}. Would you like to restore it?",
+        "discard": "Start Over",
+        "resume": "Resume"
+    },
     "messages": {
         "noQuizzes": "No quizzes available yet.",
         "noActivity": "No recent activity."
+    },
+    "save": {
+        "notSaved": "Not saved",
+        "saving": "Saving...",
+        "saved": "Saved {{time}}"
+    },
+    "bookmark": {
+        "add": "Bookmark question",
+        "remove": "Remove bookmark"
+    },
+    "leaderboard": {
+        "title": "Leaderboard 🏆",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "rank": "Rank",
+        "user": "User",
+        "quizzesTaken": "Quizzes Taken",
+        "totalScore": "Total Score",
+        "noData": "No data available for this period."
+    },
+    "profile": {
+        "title": "My Profile",
+        "fullName": "Full Name",
+        "email": "Email",
+        "role": "Role",
+        "success": "Profile updated successfully",
+        "error": "Failed to update profile",
+        "saveComingSoon": "Save Changes (Coming Soon)"
     }
 }

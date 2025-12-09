@@ -155,8 +155,8 @@ export default function UploadQuiz() {
         } else if (state === 'error') {
           setProcessing(false);
           setProcessingStatus('');
-          setError(error || 'Failed to check job status');
-          toast.error('Failed to check processing status');
+          setError(error || t('upload.errors.checkStatusFailed'));
+          toast.error(t('upload.errors.checkStatusFailed'));
         }
       });
 
@@ -231,12 +231,12 @@ export default function UploadQuiz() {
                 <div key={idx} className="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-black/20 p-3 rounded-lg border border-gray-100 dark:border-transparent">
                   <span className="text-danger-600 dark:text-danger-400 font-bold">Question {err?.question || '?'}</span>
                   {err?.questionText && <span className="text-gray-500 dark:text-gray-400 mx-1">({err.questionText})</span>}
-                  <span className="text-danger-600 dark:text-danger-400 font-bold">:</span> {err?.message || 'Unknown error'}
+                  <span className="text-danger-600 dark:text-danger-400 font-bold">:</span> {err?.message || t('upload.errors.unknown')}
                 </div>
               ))}
               {result.errors.length > 100 && (
                 <div className="text-center text-gray-500 text-xs py-2">
-                  ...and {result.errors.length - 100} more errors
+                  {t('upload.errors.moreErrors', { count: result.errors.length - 100 })}
                 </div>
               )}
             </div>

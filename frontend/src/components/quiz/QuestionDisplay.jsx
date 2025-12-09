@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookmarkIcon } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/24/solid';
 
@@ -11,6 +12,8 @@ export default function QuestionDisplay({
   disabled = false,
   reviewModeFeedback = null, // { isCorrect, correctOptionId }
 }) {
+  const { t } = useTranslation('common');
+
   if (!question) return null;
 
   return (
@@ -23,7 +26,7 @@ export default function QuestionDisplay({
         <button
           onClick={onToggleBookmark}
           className="text-gray-400 hover:text-yellow-500 dark:text-white/40 dark:hover:text-yellow-400 transition-colors ml-4"
-          title={isBookmarked ? 'Remove bookmark' : 'Bookmark question'}
+          title={isBookmarked ? t('bookmark.remove') : t('bookmark.add')}
         >
           {isBookmarked ? (
             <BookmarkIconSolid className="w-6 h-6 text-yellow-500 dark:text-yellow-400" />

@@ -142,5 +142,15 @@
         "percentage": "Phần trăm",
         "correct": "Đúng",
         "incorrect": "Sai"
+    },
+    "navigator": {
+        "title": "Điều hướng câu hỏi",
+        "legend": {
+            "correct": "Đúng",
+            "incorrect": "Sai",
+            "answered": "Đã trả lời",
+            "unanswered": "Chưa trả lời",
+            "bookmarked": "Đã đánh dấu"
+        }
     }
 }

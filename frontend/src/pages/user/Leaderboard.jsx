@@ -3,8 +3,10 @@ import leaderboardService from '../../services/leaderboard.service';
 import Card from '../../components/common/Card';
 import Loading from '../../components/common/Loading';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function Leaderboard() {
+  const { t } = useTranslation('common');
   const [period, setPeriod] = useState('weekly'); // weekly, monthly
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ export default function Leaderboard() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 dark:from-yellow-200 dark:to-yellow-500">
-          Leaderboard 🏆
+          {t('leaderboard.title')}
         </h1>
         <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl backdrop-blur-sm border border-gray-200 dark:border-white/10">
           <button
@@ -47,14 +49,14 @@ export default function Leaderboard() {
             className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${period === 'weekly' ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
               }`}
           >
-            Weekly
+            {t('leaderboard.weekly')}
           </button>
           <button
             onClick={() => setPeriod('monthly')}
             className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${period === 'monthly' ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
               }`}
           >
-            Monthly
+            {t('leaderboard.monthly')}
           </button>
         </div>
       </div>
@@ -65,16 +67,16 @@ export default function Leaderboard() {
             <thead className="bg-gray-50 dark:bg-white/5">
               <tr>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Rank
+                  {t('leaderboard.rank')}
                 </th>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  User
+                  {t('leaderboard.user')}
                 </th>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Quizzes Taken
+                  {t('leaderboard.quizzesTaken')}
                 </th>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Total Score
+                  {t('leaderboard.totalScore')}
                 </th>
               </tr>
             </thead>
@@ -118,7 +120,7 @@ export default function Leaderboard() {
               ) : (
                 <tr>
                   <td colSpan="4" className="px-6 py-12 text-center text-gray-500">
-                    No data available for this period.
+                    {t('leaderboard.noData')}
                   </td>
                 </tr>
               )}

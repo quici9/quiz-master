@@ -142,5 +142,15 @@
         "percentage": "Percentage",
         "correct": "Correct",
         "incorrect": "Incorrect"
+    },
+    "navigator": {
+        "title": "Question Navigator",
+        "legend": {
+            "correct": "Correct",
+            "incorrect": "Incorrect",
+            "answered": "Answered",
+            "unanswered": "Unanswered",
+            "bookmarked": "Bookmarked"
+        }
     }
 }

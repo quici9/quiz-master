@@ -112,7 +112,7 @@ export default function ManageQuizzes() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <span className="px-2 py-1 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs">
-                        {quiz.category?.name || 'Uncategorized'}
+                        {quiz.category?.name || t('manage.uncategorized')}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">

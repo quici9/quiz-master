@@ -69,7 +69,10 @@
             "fileTooLarge": "Kích thước file vượt quá 10MB",
             "uploadFailed": "Tải lên thất bại",
             "fillRequired": "Vui lòng điền đầy đủ thông tin",
-            "processingFailed": "Xử lý thất bại"
+            "processingFailed": "Xử lý thất bại",
+            "checkStatusFailed": "Không thể kiểm tra trạng thái",
+            "unknown": "Lỗi không xác định",
+            "moreErrors": "...và {{count}} lỗi khác"
         }
     },
     "manage": {
@@ -99,7 +102,8 @@
         },
         "deleteSuccess": "Xóa đề thi thành công",
         "deleteFailed": "Xóa đề thi thất bại",
-        "loadFailed": "Không thể tải danh sách đề thi"
+        "loadFailed": "Không thể tải danh sách đề thi",
+        "uncategorized": "Chưa phân loại"
     },
     "edit": {
         "title": "Chỉnh sửa đề thi",

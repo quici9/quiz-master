@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { StarIcon } from '@heroicons/react/24/solid';
 
 export default function ScoreDisplay({ score, correctAnswers, totalQuestions }) {
@@ -31,7 +31,12 @@ export default function ScoreDisplay({ score, correctAnswers, totalQuestions }) 
 
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{text}</h2>
       <p className="text-gray-500 dark:text-white/60 mb-8 text-lg">
-        {t('result.scoreMessage', { correct: correctAnswers, total: totalQuestions })}
+        <Trans
+          i18nKey="result.scoreMessage"
+          ns="quiz"
+          values={{ correct: correctAnswers, total: totalQuestions }}
+          components={{ 1: <strong className="font-bold text-gray-900 dark:text-white" /> }}
+        />
       </p>
 
       <div className="w-full bg-gray-200 dark:bg-white/10 h-4 rounded-full overflow-hidden backdrop-blur-sm border border-gray-100 dark:border-white/5">

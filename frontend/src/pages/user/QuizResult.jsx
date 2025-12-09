@@ -9,7 +9,7 @@ import { ClockIcon, CalendarIcon, ArrowPathIcon, ListBulletIcon, HomeIcon } from
 import { formatDate } from '../../utils/formatDate';
 
 export default function QuizResult() {
-  const { t } = useTranslation('quiz');
+  const { t } = useTranslation(['quiz', 'common']);
   const { attemptId } = useParams();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +95,7 @@ export default function QuizResult() {
         <Link to="/" className="w-full sm:w-auto">
           <Button variant="secondary" className="w-full justify-center">
             <HomeIcon className="w-5 h-5 mr-2" />
-            {t('common.nav.dashboard')}
+            {t('nav.dashboard', { ns: 'common' })}
           </Button>
         </Link>
       </div>
